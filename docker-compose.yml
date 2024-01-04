@@ -1,0 +1,49 @@
+version: "3.8"
+services:
+  homework:
+    container_name: ${APP_NAME}
+    build:
+      context: ./src
+      dockerfile: Dockerfile.local
+    stdin_open: true
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      APP_NAME: ${APP_NAME}
+      APP_PORT: ${APP_PORT}
+      APP_URL: ${APP_URL}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PW: ${POSTGRES_PW}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      SECRET: ${SECRET}
+      API_DOMAIN: ${API_DOMAIN}
+    working_dir: /go/src
+    volumes:
+      - ./src:/go/src
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    logging:
+      driver: json-file
+      options:
+        max-file: "1"
+        max-size: 1m
+    tty: true
+    networks:
+      - homework
+
+  db:
+    image: postgres:15.1-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PW}
+      POSTGRES_DB: ${POSTGRES_DB}
+    restart: always
+    networks:
+      - homework
+
+networks:
+  homework:
+    driver: bridge
