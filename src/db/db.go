@@ -3,40 +3,30 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"log"
-	"os"
+	"homework/config"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-func NewDB() *bun.DB {
-		err := godotenv.Load()
-		if err != nil {
-			log.Fatalln(err)
-		}
-	
-	url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", 
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PW"),
-		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSTGRES_PORT"),
-		os.Getenv("POSTGRES_DB"))
-		sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(url)))
+func NewDB(c config.Config) *bun.DB {	
+	url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", 
+		c.PostgresUser,
+		c.PostgresPW,
+		c.PostgresHost,
+		c.PostgresPort,
+		c.PostgresDB)
+	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(url)))
 
-		sqldb.SetMaxIdleConns(10)
-		sqldb.SetMaxOpenConns(50)
-		sqldb.SetConnMaxLifetime(300 * time.Second)
-		boil.SetDB(sqldb)
+	sqldb.SetMaxIdleConns(10)
+	sqldb.SetMaxOpenConns(50)
+	sqldb.SetConnMaxLifetime(300 * time.Second)
+	boil.SetDB(sqldb)
 
-		db := bun.NewDB(sqldb, pgdialect.New())
-	if err != nil {
-		log.Fatalln(err)
-	}
+	db := bun.NewDB(sqldb, pgdialect.New())
 	fmt.Println("Connceted")
 	return db
 }

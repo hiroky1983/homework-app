@@ -1,19 +1,19 @@
 package router
 
 import (
+	"homework/config"
 	"homework/controller"
 	"net/http"
-	"os"
 
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func NewRouter(uc controller.IUserController) *echo.Echo {
+func NewRouter(uc controller.IUserController, cnf config.Config) *echo.Echo {
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3000", os.Getenv("APP_URL")},
+		AllowOrigins: []string{"http://localhost:3000", cnf.AppURL},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
 			echo.HeaderAccessControlAllowHeaders, echo.HeaderXCSRFToken},
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE"},
@@ -21,7 +21,7 @@ func NewRouter(uc controller.IUserController) *echo.Echo {
 	}))
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		CookiePath:     "/",
-		CookieDomain:   os.Getenv("API_DOMAIN"),
+		CookieDomain:  cnf.APIDomain,
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteNoneMode,
 		//CookieSameSite: http.SameSiteDefaultMode,
@@ -33,7 +33,7 @@ func NewRouter(uc controller.IUserController) *echo.Echo {
 	e.GET("/csrf", uc.CsrfToken)
 	t := e.Group("/tasks")
 	t.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey:  []byte(os.Getenv("SECRET")),
+		SigningKey:  []byte(cnf.Seclet),
 		TokenLookup: "cookie:token",
 	}))
 	return e

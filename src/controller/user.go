@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"homework/config"
 	"homework/domain/model/user"
 	"homework/usecase"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -19,10 +19,11 @@ type IUserController interface {
 
 type userController struct {
 	uu usecase.IUserUsecase
+	cnf config.Config
 }
 
-func NewUserController(uu usecase.IUserUsecase) IUserController {
-	return &userController{uu}
+func NewUserController(uu usecase.IUserUsecase, cnf config.Config) IUserController {
+	return &userController{uu, cnf}
 }
 
 func (uc *userController) SignUp(c echo.Context) error {
@@ -42,7 +43,7 @@ func (uc *userController) LogIn(c echo.Context) error {
 	if err := c.Bind(&user); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	tokenString, err := uc.uu.Login(user)
+	tokenString, err := uc.uu.Login(user, uc.cnf)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -51,7 +52,7 @@ func (uc *userController) LogIn(c echo.Context) error {
 	cookie.Value = tokenString // cookieにセットするvalueを定義
 	cookie.Expires = time.Now().Add(24 * time.Hour) // cookieの有効期限を定義(24時間に設定)
 	cookie.Path = "/"  // cookieの有効パスを定義
-	cookie.Domain = os.Getenv("API_DOMAIN") //  cookieの有効ドメインを定義
+	cookie.Domain = uc.cnf.APIDomain //  cookieの有効ドメインを定義
 	// cookie.Secure = true // cookieのHTTPS通信のみ有効にする（postmanやlocalhostで試す場合はfalseにする）
 	cookie.HttpOnly = true // cookieをHTTP通信のみ有効にする（JSからのアクセスを禁止する）
 	cookie.SameSite = http.SameSiteNoneMode // cookieをサイト間で共有する（クロスサイトリクエストを許可する）
@@ -65,7 +66,7 @@ func (uc *userController) LogOut(c echo.Context) error {
 	cookie.Value = ""
 	cookie.Expires = time.Now()
 	cookie.Path = "/"
-	cookie.Domain = os.Getenv("API_DOMAIN")
+	cookie.Domain = uc.cnf.APIDomain
 	// cookie.Secure = true
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteNoneMode

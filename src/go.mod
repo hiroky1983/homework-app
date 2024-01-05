@@ -5,15 +5,19 @@ go 1.21.1
 require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/golang-jwt/jwt/v4 v4.5.0
-	github.com/joho/godotenv v1.5.1
+	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo-jwt/v4 v4.2.0
 	github.com/labstack/echo/v4 v4.11.4
+	github.com/urfave/cli/v2 v2.27.1
 	golang.org/x/crypto v0.17.0
 )
 
 require (
+	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/friendsofgo/errors v0.9.2 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
+	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	mellium.im/sasl v0.3.1 // indirect
 )
 

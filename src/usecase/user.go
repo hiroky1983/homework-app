@@ -1,10 +1,10 @@
 package usecase
 
 import (
+	"homework/config"
 	userModel "homework/domain/model/user"
 	"homework/domain/repository"
 	"homework/validator"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -13,7 +13,7 @@ import (
 
 type IUserUsecase interface {
 	SignUp(user userModel.User) (userModel.UserResponse, error)
-	Login(user userModel.User) (string, error)
+	Login(user userModel.User,conf config.Config) (string, error)
 }
 
 type userUsecase struct {
@@ -44,7 +44,7 @@ func (uu *userUsecase) SignUp(user userModel.User) (userModel.UserResponse, erro
 	return resUser, nil
 }
 
-func (uu *userUsecase) Login(user userModel.User) (string, error) {
+func (uu *userUsecase) Login(user userModel.User, cnf config.Config) (string, error) {
 	storedUser := userModel.User{}
 	if err := uu.ur.GetUserByEmail(&storedUser, user.Email); err != nil {
 		return "", err
@@ -57,7 +57,7 @@ func (uu *userUsecase) Login(user userModel.User) (string, error) {
 		"user_id": storedUser.ID,
 		"exp":     time.Now().Add(time.Hour * 12).Unix(),
 	})
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	tokenString, err := token.SignedString([]byte(cnf.Seclet))
 	if err != nil {
 		return "", err
 	}
