@@ -27,6 +27,7 @@ func NewRouter(uc controller.IUserController, cnf config.Config) *echo.Echo {
 		//CookieSameSite: http.SameSiteDefaultMode,
 		//CookieMaxAge:   60,
 	}))
+	e.Use(middleware.Logger())
 	e.POST("/signup", uc.SignUp)
 	e.POST("/login", uc.LogIn)
 	e.POST("/logout", uc.LogOut)
