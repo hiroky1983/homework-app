@@ -10,7 +10,6 @@ import (
 func init() {
 	Migrations.MustRegister(func(ctx context.Context, db *bun.DB) error {
 		_, err := db.NewCreateTable().
-			// model.User は自分で定義したUser 構造体
 			Model((*user.User)(nil)).
 			Exec(ctx)
 		if err != nil {
