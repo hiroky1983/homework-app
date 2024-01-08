@@ -8,6 +8,8 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo-jwt/v4 v4.2.0
 	github.com/labstack/echo/v4 v4.11.4
+	github.com/morikuni/failure v1.1.2
+	github.com/sirupsen/logrus v1.9.3
 	github.com/urfave/cli/v2 v2.27.1
 	golang.org/x/crypto v0.17.0
 )

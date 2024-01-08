@@ -3,6 +3,7 @@ package controller
 import (
 	"homework/config"
 	"homework/domain/model/user"
+	apperror "homework/error"
 	"homework/usecase"
 	"net/http"
 	"time"
@@ -29,11 +30,11 @@ func NewUserController(uu usecase.IUserUsecase, cnf config.Config) IUserControll
 func (uc *userController) SignUp(c echo.Context) error {
 	user := user.User{}
 	if err := c.Bind(&user); err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
 	}
 	userRes, err := uc.uu.SignUp(user)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
 	return c.JSON(http.StatusCreated, userRes)
 }
@@ -53,7 +54,7 @@ func (uc *userController) LogIn(c echo.Context) error {
 	cookie.Expires = time.Now().Add(24 * time.Hour) // cookieの有効期限を定義(24時間に設定)
 	cookie.Path = "/"  // cookieの有効パスを定義
 	cookie.Domain = uc.cnf.APIDomain //  cookieの有効ドメインを定義
-	// cookie.Secure = true // cookieのHTTPS通信のみ有効にする（postmanやlocalhostで試す場合はfalseにする）
+	cookie.Secure = true // cookieのHTTPS通信のみ有効にする（postmanやlocalhostで試す場合はfalseにする）
 	cookie.HttpOnly = true // cookieをHTTP通信のみ有効にする（JSからのアクセスを禁止する）
 	cookie.SameSite = http.SameSiteNoneMode // cookieをサイト間で共有する（クロスサイトリクエストを許可する）
 	c.SetCookie(cookie) // cookieをセット
@@ -67,7 +68,7 @@ func (uc *userController) LogOut(c echo.Context) error {
 	cookie.Expires = time.Now()
 	cookie.Path = "/"
 	cookie.Domain = uc.cnf.APIDomain
-	// cookie.Secure = true
+	cookie.Secure = true
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteNoneMode
 	c.SetCookie(cookie)
