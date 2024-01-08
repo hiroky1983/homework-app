@@ -42,11 +42,11 @@ func (uc *userController) SignUp(c echo.Context) error {
 func (uc *userController) LogIn(c echo.Context) error {
 	user := user.User{}
 	if err := c.Bind(&user); err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
 	}
 	tokenString, err := uc.uu.Login(user, uc.cnf)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
 	cookie := new(http.Cookie)
 	cookie.Name = "token" // cookieにセットするkey名を定義

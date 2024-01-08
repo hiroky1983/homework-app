@@ -3,6 +3,7 @@ package router
 import (
 	"homework/config"
 	"homework/controller"
+	apperror "homework/error"
 	"net/http"
 	"runtime/debug"
 
@@ -44,12 +45,6 @@ func NewRouter(uc controller.IUserController, cnf config.Config) *echo.Echo {
 	return e
 }
 
-type customError struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Trace   string `json:"trace,omitempty"`
-}
-
 // エラーハンドリング関数
 func customHTTPErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
@@ -70,7 +65,7 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 	}).Error("An error occurred")
 
 	// レスポンスにはスタックトレースを含めない
-	customErr := &customError{
+	customErr := &apperror.ErrorResponse{
 		Code:    code,
 		Message: msg,
 	}
