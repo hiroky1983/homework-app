@@ -58,7 +58,7 @@ func (uc *userController) LogIn(c echo.Context) error {
 	cookie.HttpOnly = true // cookieをHTTP通信のみ有効にする（JSからのアクセスを禁止する）
 	cookie.SameSite = http.SameSiteNoneMode // cookieをサイト間で共有する（クロスサイトリクエストを許可する）
 	c.SetCookie(cookie) // cookieをセット
-	return c.NoContent(http.StatusOK)
+	return c.JSON(http.StatusOK, "{ status: 200 , message: success}")
 }
 
 func (uc *userController) LogOut(c echo.Context) error {
