@@ -34,7 +34,7 @@ func (u *User) Validate() error {
 		validation.Field(
 			&u.Password,
 			validation.Required.Error("password is required"),
-			validation.RuneLength(8, 30).Error("limited min 6 max 30 char"),
+			validation.RuneLength(8, 30).Error("limited min 8 max 30 char"),
 		),
 	)
 }
