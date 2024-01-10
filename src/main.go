@@ -9,7 +9,6 @@ import (
 	"homework/domain/repository"
 	"homework/router"
 	"homework/usecase"
-	"homework/validator"
 )
 
 func main() {
@@ -19,9 +18,8 @@ func main() {
 		fmt.Println(err)
 	}
 	db := db.NewDB(*cfg)
-	userValidator := validator.NewUserValidator()
 	userRepository := repository.NewUserRepository(db)
-	userUsecase := usecase.NewUserUsecase(userRepository, userValidator)
+	userUsecase := usecase.NewUserUsecase(userRepository)
 	userController := controller.NewUserController(userUsecase, *cfg)
 	e := router.NewRouter(userController, *cfg)
 	e.Logger.Fatal(e.Start(":8080"))
