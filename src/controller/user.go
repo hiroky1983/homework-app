@@ -19,7 +19,7 @@ type IUserController interface {
 }
 
 type userController struct {
-	uu usecase.IUserUsecase
+	uu  usecase.IUserUsecase
 	cnf config.Config
 }
 
@@ -49,15 +49,15 @@ func (uc *userController) LogIn(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
 	cookie := new(http.Cookie)
-	cookie.Name = "token" // cookieにセットするkey名を定義
-	cookie.Value = tokenString // cookieにセットするvalueを定義
+	cookie.Name = "token"                           // cookieにセットするkey名を定義
+	cookie.Value = tokenString                      // cookieにセットするvalueを定義
 	cookie.Expires = time.Now().Add(24 * time.Hour) // cookieの有効期限を定義(24時間に設定)
-	cookie.Path = "/"  // cookieの有効パスを定義
-	cookie.Domain = uc.cnf.APIDomain //  cookieの有効ドメインを定義
-	cookie.Secure = true // cookieのHTTPS通信のみ有効にする（postmanやlocalhostで試す場合はfalseにする）
-	cookie.HttpOnly = true // cookieをHTTP通信のみ有効にする（JSからのアクセスを禁止する）
-	cookie.SameSite = http.SameSiteNoneMode // cookieをサイト間で共有する（クロスサイトリクエストを許可する）
-	c.SetCookie(cookie) // cookieをセット
+	cookie.Path = "/"                               // cookieの有効パスを定義
+	cookie.Domain = uc.cnf.APIDomain                //  cookieの有効ドメインを定義
+	cookie.Secure = true                            // cookieのHTTPS通信のみ有効にする（postmanやlocalhostで試す場合はfalseにする）
+	cookie.HttpOnly = true                          // cookieをHTTP通信のみ有効にする（JSからのアクセスを禁止する）
+	cookie.SameSite = http.SameSiteNoneMode         // cookieをサイト間で共有する（クロスサイトリクエストを許可する）
+	c.SetCookie(cookie)                             // cookieをセット
 	return c.JSON(http.StatusOK, "{ status: 200 , message: success}")
 }
 

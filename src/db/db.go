@@ -12,8 +12,8 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-func NewDB(c config.Config) *bun.DB {	
-	url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", 
+func NewDB(c config.Config) *bun.DB {
+	url := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		c.PostgresUser,
 		c.PostgresPW,
 		c.PostgresHost,

@@ -30,7 +30,7 @@ func (ur *userRepository) GetUserByEmail(user *user.User, email string) error {
 }
 
 func (ur *userRepository) CreateUser(user *user.User) error {
-	_, err := ur.db.NewInsert().Model(user).Exec(context.Background()) 
+	_, err := ur.db.NewInsert().Model(user).Exec(context.Background())
 
 	if err != nil {
 		return err

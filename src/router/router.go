@@ -15,7 +15,7 @@ import (
 
 func NewRouter(uc controller.IUserController, cnf config.Config) *echo.Echo {
 	e := echo.New()
-	
+
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:3000", cnf.AppURL},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
@@ -25,7 +25,7 @@ func NewRouter(uc controller.IUserController, cnf config.Config) *echo.Echo {
 	}))
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		CookiePath:     "/",
-		CookieDomain:  cnf.APIDomain,
+		CookieDomain:   cnf.APIDomain,
 		CookieHTTPOnly: true,
 		// CookieSameSite: http.SameSiteNoneMode,
 		CookieSameSite: http.SameSiteDefaultMode,

@@ -13,7 +13,7 @@ import (
 
 type IUserUsecase interface {
 	SignUp(user userModel.User) (userModel.UserResponse, error)
-	Login(user userModel.User,conf config.Config) (string, error)
+	Login(user userModel.User, conf config.Config) (string, error)
 }
 
 type userUsecase struct {
