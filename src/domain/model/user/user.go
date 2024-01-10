@@ -23,6 +23,11 @@ type UserResponse struct {
 	Email string `json:"email" bun:"unique"`
 }
 
+type LonginResponse struct {
+	Code 	int    `json:"code"`
+	Message string `json:"message"`
+}
+
 func (u *User) Validate() error {
 	return validation.ValidateStruct(u,
 		validation.Field(

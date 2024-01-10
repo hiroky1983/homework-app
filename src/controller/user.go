@@ -28,11 +28,11 @@ func NewUserController(uu usecase.IUserUsecase, cnf config.Config) IUserControll
 }
 
 func (uc *userController) SignUp(c echo.Context) error {
-	user := user.User{}
-	if err := c.Bind(&user); err != nil {
+	u := user.User{}
+	if err := c.Bind(&u); err != nil {
 		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
 	}
-	userRes, err := uc.uu.SignUp(user)
+	userRes, err := uc.uu.SignUp(u)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
@@ -40,11 +40,11 @@ func (uc *userController) SignUp(c echo.Context) error {
 }
 
 func (uc *userController) LogIn(c echo.Context) error {
-	user := user.User{}
-	if err := c.Bind(&user); err != nil {
+	u := user.User{}
+	if err := c.Bind(&u); err != nil {
 		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
 	}
-	tokenString, err := uc.uu.Login(user, uc.cnf)
+	tokenString, err := uc.uu.Login(u, uc.cnf)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
@@ -58,7 +58,10 @@ func (uc *userController) LogIn(c echo.Context) error {
 	cookie.HttpOnly = true                          // cookieをHTTP通信のみ有効にする（JSからのアクセスを禁止する）
 	cookie.SameSite = http.SameSiteNoneMode         // cookieをサイト間で共有する（クロスサイトリクエストを許可する）
 	c.SetCookie(cookie)                             // cookieをセット
-	return c.JSON(http.StatusOK, "{ status: 200 , message: success}")
+	return c.JSON(http.StatusOK, user.LonginResponse{
+		Code:    http.StatusOK,
+		Message: "success",
+	})
 }
 
 func (uc *userController) LogOut(c echo.Context) error {
