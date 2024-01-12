@@ -24,7 +24,7 @@ type UserResponse struct {
 }
 
 type LonginResponse struct {
-	Code 	int    `json:"code"`
+	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 

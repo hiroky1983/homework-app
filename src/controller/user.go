@@ -4,6 +4,7 @@ import (
 	"homework/config"
 	"homework/domain/model/user"
 	apperror "homework/error"
+	"homework/middleware"
 	"homework/usecase"
 	"net/http"
 	"time"
@@ -48,16 +49,7 @@ func (uc *userController) LogIn(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
-	cookie := new(http.Cookie)
-	cookie.Name = "token"                           // cookieにセットするkey名を定義
-	cookie.Value = tokenString                      // cookieにセットするvalueを定義
-	cookie.Expires = time.Now().Add(24 * time.Hour) // cookieの有効期限を定義(24時間に設定)
-	cookie.Path = "/"                               // cookieの有効パスを定義
-	cookie.Domain = uc.cnf.APIDomain                //  cookieの有効ドメインを定義
-	cookie.Secure = true                            // cookieのHTTPS通信のみ有効にする（postmanやlocalhostで試す場合はfalseにする）
-	cookie.HttpOnly = true                          // cookieをHTTP通信のみ有効にする（JSからのアクセスを禁止する）
-	cookie.SameSite = http.SameSiteNoneMode         // cookieをサイト間で共有する（クロスサイトリクエストを許可する）
-	c.SetCookie(cookie)                             // cookieをセット
+	middleware.SetCookie(tokenString, uc.cnf.APIDomain, c, time.Now().Add(24*time.Hour))
 	return c.JSON(http.StatusOK, user.LonginResponse{
 		Code:    http.StatusOK,
 		Message: "success",
@@ -65,16 +57,7 @@ func (uc *userController) LogIn(c echo.Context) error {
 }
 
 func (uc *userController) LogOut(c echo.Context) error {
-	cookie := new(http.Cookie)
-	cookie.Name = "token" // cookie名を定義
-	cookie.Value = ""
-	cookie.Expires = time.Now()
-	cookie.Path = "/"
-	cookie.Domain = uc.cnf.APIDomain
-	cookie.Secure = true
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteNoneMode
-	c.SetCookie(cookie)
+	middleware.SetCookie("", uc.cnf.APIDomain, c, time.Now())
 	return c.NoContent(http.StatusOK)
 }
 
