@@ -4,11 +4,12 @@ import (
 	"homework/config"
 	"homework/domain/model/user"
 	apperror "homework/error"
-	"homework/middleware"
+	"homework/middleware/cookie"
 	"homework/usecase"
 	"net/http"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,6 +18,7 @@ type IUserController interface {
 	LogIn(c echo.Context) error
 	LogOut(c echo.Context) error
 	CsrfToken(c echo.Context) error
+	GetUser(c echo.Context) error
 }
 
 type userController struct {
@@ -49,7 +51,7 @@ func (uc *userController) LogIn(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
-	middleware.SetCookie(tokenString, uc.cnf.APIDomain, c, time.Now().Add(24*time.Hour))
+	cookie.SetCookie(tokenString, uc.cnf.APIDomain, c, time.Now().Add(24*time.Hour))
 	return c.JSON(http.StatusOK, user.LonginResponse{
 		Code:    http.StatusOK,
 		Message: "success",
@@ -57,7 +59,7 @@ func (uc *userController) LogIn(c echo.Context) error {
 }
 
 func (uc *userController) LogOut(c echo.Context) error {
-	middleware.SetCookie("", uc.cnf.APIDomain, c, time.Now())
+	cookie.SetCookie("", uc.cnf.APIDomain, c, time.Now())
 	return c.NoContent(http.StatusOK)
 }
 
@@ -66,4 +68,11 @@ func (uc *userController) CsrfToken(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"csrf_token": token,
 	})
+}
+
+func (uc *userController) GetUser(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["user_id"]
+	return c.JSON(http.StatusOK, userID)
 }

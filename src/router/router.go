@@ -15,7 +15,6 @@ import (
 
 func NewRouter(uc controller.IUserController, cnf config.Config) *echo.Echo {
 	e := echo.New()
-
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:3000", cnf.AppURL},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
@@ -27,8 +26,8 @@ func NewRouter(uc controller.IUserController, cnf config.Config) *echo.Echo {
 		CookiePath:     "/",
 		CookieDomain:   cnf.APIDomain,
 		CookieHTTPOnly: true,
-		// CookieSameSite: http.SameSiteNoneMode,
-		CookieSameSite: http.SameSiteDefaultMode,
+		CookieSameSite: http.SameSiteNoneMode,
+		// CookieSameSite: http.SameSiteDefaultMode,
 		//CookieMaxAge:   60,
 	}))
 	e.Use(middleware.Logger())
@@ -36,11 +35,12 @@ func NewRouter(uc controller.IUserController, cnf config.Config) *echo.Echo {
 	e.POST("/login", uc.LogIn)
 	e.POST("/logout", uc.LogOut)
 	e.GET("/csrf", uc.CsrfToken)
-	t := e.Group("/tasks")
-	t.Use(echojwt.WithConfig(echojwt.Config{
+	user := e.Group("/user")
+	user.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey:  []byte(cnf.Seclet),
 		TokenLookup: "cookie:token",
 	}))
+	user.GET("", uc.GetUser)
 	e.HTTPErrorHandler = customHTTPErrorHandler
 	return e
 }
