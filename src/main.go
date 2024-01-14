@@ -18,7 +18,7 @@ func main() {
 		fmt.Println(err)
 	}
 	db := db.NewDB(*cfg)
-	googleOauthConfig:= cfg.NewGoogleOauthConfig()
+	googleOauthConfig := cfg.NewGoogleOauthConfig()
 	userRepository := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepository)
 	userController := controller.NewUserController(userUsecase, *cfg, googleOauthConfig)

@@ -25,8 +25,8 @@ type IUserController interface {
 }
 
 type userController struct {
-	uu  usecase.IUserUsecase
-	cnf config.Config
+	uu        usecase.IUserUsecase
+	cnf       config.Config
 	oauthConf *oauth2.Config
 }
 
@@ -87,7 +87,7 @@ func (uc *userController) GoogleAuth(c echo.Context) error {
 	return c.JSON(http.StatusOK, url)
 }
 
-//wip
+// wip
 func (uc *userController) GoogleAuthCallback(c echo.Context) error {
 	url := "http://localhost:3000/top"
 	return c.Redirect(http.StatusFound, url)
