@@ -82,8 +82,8 @@ func (uc *userController) GetUser(c echo.Context) error {
 }
 
 func (uc *userController) GoogleAuth(c echo.Context) error {
-	state := "state"
-	url := uc.oauthConf.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
+	token := c.Get("csrf").(string)
+	url := uc.oauthConf.AuthCodeURL(token, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 	return c.JSON(http.StatusOK, url)
 }
 

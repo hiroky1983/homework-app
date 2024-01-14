@@ -22,7 +22,7 @@ type Config struct {
 	APIDomain    string `envconfig:"API_DOMAIN" required:"true"`
 	GoogleAPIKey string `envconfig:"GOOGLE_API_KEY" required:"true"`
 	GoogleOAuthClientID string `envconfig:"GOOGLE_OAUTH_CLIENT_ID" required:"true"`
-	GoogleOAuthClientSeclet string `envconfig:"GOOGLE_OAUTH_CLIENT_SECLET" required:"true"`
+	GoogleOAuthClientSecret string `envconfig:"GOOGLE_OAUTH_CLIENT_SECRET" required:"true"`
 	GoogleOAuthRedirectURL string `envconfig:"GOOGLE_OAUTH_REDIRECT_URL" required:"true"`
 }
 
@@ -39,7 +39,7 @@ func (c *Config)NewGoogleOauthConfig() *oauth2.Config {
 	conf := &oauth2.Config{
 		RedirectURL:  c.GoogleOAuthRedirectURL,
 		ClientID:     c.GoogleOAuthClientID,
-		ClientSecret: c.GoogleOAuthClientSeclet,
+		ClientSecret: c.GoogleOAuthClientSecret,
 		Scopes:       []string{"openid", "email", "profile"},
 		Endpoint:     google.Endpoint,
 	}
