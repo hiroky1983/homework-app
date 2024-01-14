@@ -21,8 +21,6 @@ func NewUserRepository(db *bun.DB) IUserRepository {
 }
 
 func (ur *userRepository) GetUserByEmail(user *user.User, email string) error {
-	// ms := make([]map[string]interface{}, 0)
-
 	if err := ur.db.NewSelect().Model((user)).Where("email=?", email).Scan(context.Background(), user); err != nil {
 		return err
 	}

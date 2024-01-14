@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/oauth2"
 )
 
 type IUserController interface {
@@ -19,15 +20,18 @@ type IUserController interface {
 	LogOut(c echo.Context) error
 	CsrfToken(c echo.Context) error
 	GetUser(c echo.Context) error
+	GoogleAuth(c echo.Context) error
+	GoogleAuthCallback(c echo.Context) error
 }
 
 type userController struct {
-	uu  usecase.IUserUsecase
-	cnf config.Config
+	uu        usecase.IUserUsecase
+	cnf       config.Config
+	oauthConf *oauth2.Config
 }
 
-func NewUserController(uu usecase.IUserUsecase, cnf config.Config) IUserController {
-	return &userController{uu, cnf}
+func NewUserController(uu usecase.IUserUsecase, cnf config.Config, oauthConf *oauth2.Config) IUserController {
+	return &userController{uu, cnf, oauthConf}
 }
 
 func (uc *userController) SignUp(c echo.Context) error {
@@ -75,4 +79,16 @@ func (uc *userController) GetUser(c echo.Context) error {
 	claims := user.Claims.(jwt.MapClaims)
 	userID := claims["user_id"]
 	return c.JSON(http.StatusOK, userID)
+}
+
+func (uc *userController) GoogleAuth(c echo.Context) error {
+	token := c.Get("csrf").(string)
+	url := uc.oauthConf.AuthCodeURL(token, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
+	return c.JSON(http.StatusOK, url)
+}
+
+// wip
+func (uc *userController) GoogleAuthCallback(c echo.Context) error {
+	url := "http://localhost:3000/top"
+	return c.Redirect(http.StatusFound, url)
 }

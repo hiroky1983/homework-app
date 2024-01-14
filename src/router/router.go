@@ -35,6 +35,8 @@ func NewRouter(uc controller.IUserController, cnf config.Config) *echo.Echo {
 	e.POST("/login", uc.LogIn)
 	e.POST("/logout", uc.LogOut)
 	e.GET("/csrf", uc.CsrfToken)
+	e.POST("/google", uc.GoogleAuth)
+	e.GET("/google/callback", uc.GoogleAuthCallback)
 	user := e.Group("/user")
 	user.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey:  []byte(cnf.Seclet),
