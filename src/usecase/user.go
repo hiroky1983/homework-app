@@ -14,6 +14,7 @@ import (
 type IUserUsecase interface {
 	SignUp(user userModel.User) (userModel.UserResponse, error)
 	Login(user userModel.User, conf config.Config) (string, error)
+	LoginWithGoogle(user userModel.User, cnf config.Config) (string, error)
 }
 
 type userUsecase struct {
@@ -58,6 +59,28 @@ func (uu *userUsecase) Login(user userModel.User, cnf config.Config) (string, er
 	err := bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(user.Password))
 	if err != nil {
 		return "", err
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": storedUser.ID,
+		"exp":     time.Now().Add(time.Hour * 12).Unix(),
+	})
+	tokenString, err := token.SignedString([]byte(cnf.Seclet))
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
+}
+
+func (uu *userUsecase) LoginWithGoogle(user userModel.User, cnf config.Config) (string, error) {
+	storedUser := userModel.User{}
+	if err := uu.ur.GetUserByID(&storedUser, user.GoogleID); err != nil {
+		return "", err
+	}
+	if storedUser.GoogleID == ""	{
+		if err := uu.ur.CreateUser(&user); err != nil {
+			return "", err
+		}
+		storedUser.ID = user.ID
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": storedUser.ID,

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"homework/config"
 	"homework/domain/model/user"
 	apperror "homework/error"
@@ -12,6 +13,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
+	v2 "google.golang.org/api/oauth2/v2"
 )
 
 type IUserController interface {
@@ -87,8 +89,33 @@ func (uc *userController) GoogleAuth(c echo.Context) error {
 	return c.JSON(http.StatusOK, url)
 }
 
-// wip
 func (uc *userController) GoogleAuthCallback(c echo.Context) error {
+	Code := c.QueryParam("code")
+	ctx := context.Background()
+	tok, err := uc.oauthConf.Exchange(ctx, Code)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
+
+	s, err := v2.New(uc.oauthConf.Client(ctx, tok))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
+
+	info, err := s.Tokeninfo().AccessToken(tok.AccessToken).Context(ctx).Do()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
+	u := user.User{}
+	u.Email = info.Email
+	u.GoogleID = info.UserId
+	tokenString, err := uc.uu.LoginWithGoogle(u, uc.cnf)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
+
+	cookie.SetCookie(tokenString, uc.cnf.APIDomain, c, time.Now().Add(24*time.Hour))
+	// ハードコーディングをあとでやめる
 	url := "http://localhost:3000/top"
 	return c.Redirect(http.StatusFound, url)
 }

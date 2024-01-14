@@ -12,8 +12,9 @@ type User struct {
 	bun.BaseModel `bun:"table:user,alias:u"`
 
 	ID        string    `bun:"id,pk,type:uuid,default:gen_random_uuid()"`
-	Email     string    `bun:"type:varchar(255),unique"`
+	Email     string    `bun:"type:varchar(255)"`
 	Password  string    `bun:"type:varchar(255)"`
+	GoogleID  string    `bun:"type:varchar(255)"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -23,6 +24,7 @@ type UserResponse struct {
 	Email string `json:"email" bun:"unique"`
 }
 
+// Todo: 共通のレスポンスに切り分ける
 type LonginResponse struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
