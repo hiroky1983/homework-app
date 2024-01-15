@@ -15,8 +15,8 @@ type User struct {
 	Email     string    `bun:"type:varchar(255)"`
 	Password  string    `bun:"type:varchar(255)"`
 	GoogleID  string    `bun:"type:varchar(255)"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at" bun:"default:current_timestamp"`
+	UpdatedAt time.Time `json:"updated_at" bun:"default:current_timestamp"`
 }
 
 type UserResponse struct {
