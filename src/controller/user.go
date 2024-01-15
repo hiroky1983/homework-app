@@ -105,7 +105,6 @@ func (uc *userController) GoogleAuthCallback(c echo.Context) error {
 	}
 
 	info, err := s.Tokeninfo().AccessToken(tok.AccessToken).Context(ctx).Do()
-	fmt.Printf("info: %+v\n", info)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
