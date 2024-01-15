@@ -15,6 +15,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 	v2 "google.golang.org/api/oauth2/v2"
+	"google.golang.org/api/option"
 )
 
 type IUserController interface {
@@ -98,12 +99,13 @@ func (uc *userController) GoogleAuthCallback(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
 
-	s, err := v2.New(uc.oauthConf.Client(ctx, tok))
+	s, err := v2.NewService(ctx, option.WithTokenSource(uc.oauthConf.TokenSource(ctx, tok)))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
 
 	info, err := s.Tokeninfo().AccessToken(tok.AccessToken).Context(ctx).Do()
+	fmt.Printf("info: %+v\n", info)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
