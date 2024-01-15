@@ -76,7 +76,7 @@ func (uu *userUsecase) LoginWithGoogle(user userModel.User, cnf config.Config) (
 	if err := uu.ur.GetUserByID(&storedUser, user.GoogleID); err != nil {
 		return "", err
 	}
-	if storedUser.GoogleID == ""	{
+	if storedUser.GoogleID == "" {
 		if err := uu.ur.CreateUser(&user); err != nil {
 			return "", err
 		}
