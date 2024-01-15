@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"homework/config"
 	"homework/domain/model/user"
 	apperror "homework/error"
@@ -115,7 +116,7 @@ func (uc *userController) GoogleAuthCallback(c echo.Context) error {
 	}
 
 	cookie.SetCookie(tokenString, uc.cnf.APIDomain, c, time.Now().Add(24*time.Hour))
-	// ハードコーディングをあとでやめる
-	url := "http://localhost:3000/top"
+
+	url := fmt.Sprintf("%s/top", uc.cnf.AppURL)
 	return c.Redirect(http.StatusFound, url)
 }
