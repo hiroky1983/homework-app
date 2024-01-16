@@ -1,7 +1,8 @@
 package usecase
 
 import (
-	"fmt"
+	"database/sql"
+	"errors"
 	"homework/config"
 	userModel "homework/domain/model/user"
 	"homework/domain/repository"
@@ -27,8 +28,16 @@ func NewUserUsecase(ur repository.IUserRepository) IUserUsecase {
 
 func (uu *userUsecase) SignUp(user userModel.User) (userModel.UserResponse, error) {
 	if err := user.Validate(); err != nil {
-		fmt.Println(err)
 		return userModel.UserResponse{}, err
+	}
+	storedUser := userModel.User{}
+	if err := uu.ur.GetUserByEmail(&storedUser, user.Email); err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+		return userModel.UserResponse{}, err
+		}
+	}
+	if storedUser.Email != "" {
+		return userModel.UserResponse{}, errors.New("email already exists")
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 	if err != nil {

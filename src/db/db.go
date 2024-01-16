@@ -9,7 +9,7 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
-	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/uptrace/bun/extra/bundebug"
 )
 
 func NewDB(c config.Config) *bun.DB {
@@ -24,9 +24,10 @@ func NewDB(c config.Config) *bun.DB {
 	sqldb.SetMaxIdleConns(10)
 	sqldb.SetMaxOpenConns(50)
 	sqldb.SetConnMaxLifetime(300 * time.Second)
-	boil.SetDB(sqldb)
 
 	db := bun.NewDB(sqldb, pgdialect.New())
-	fmt.Println("Connceted")
+	// db.AddQueryHook(bundebug.NewQueryHook())
+	db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
+	fmt.Println("DB Connceted")
 	return db
 }

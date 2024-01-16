@@ -23,7 +23,7 @@ func NewUserRepository(db *bun.DB) IUserRepository {
 }
 
 func (ur *userRepository) GetUserByEmail(user *user.User, email string) error {
-	if err := ur.db.NewSelect().Model((user)).Where("email=?", email).Scan(context.Background(), user); err != nil {
+	if err := ur.db.NewSelect().Model((user)).Where("email=?", email).Where("password != '' ").Scan(context.Background(), user); err != nil {
 		return err
 	}
 	return nil
