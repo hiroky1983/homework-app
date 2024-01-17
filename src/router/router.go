@@ -1,9 +1,11 @@
 package router
 
 import (
+	"fmt"
 	"homework/config"
 	"homework/controller"
 	apperror "homework/error"
+	"log"
 	"net/http"
 	"runtime/debug"
 
@@ -11,10 +13,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/net/websocket"
 )
 
 func NewRouter(uc controller.IUserController, cnf config.Config) *echo.Echo {
 	e := echo.New()
+
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:3000", cnf.AppURL},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
@@ -43,6 +47,8 @@ func NewRouter(uc controller.IUserController, cnf config.Config) *echo.Echo {
 		TokenLookup: "cookie:token",
 	}))
 	user.GET("", uc.GetUser)
+	e.GET("/socket", handleWebSocket)
+
 	e.HTTPErrorHandler = customHTTPErrorHandler
 	return e
 }
@@ -80,4 +86,44 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 			c.JSON(code, customErr)
 		}
 	}
+}
+
+func handleWebSocket(c echo.Context) error {
+	log.Println("Serving at localhost:8000...")
+	websocket.Handler(func(ws *websocket.Conn) {
+			defer ws.Close()
+			fmt.Println("===============================================")
+			// 初回のメッセージを送信
+			err := websocket.Message.Send(ws, "Server: Hello, Next.js!")
+			if err != nil {
+				c.Logger().Error(err)
+			}
+			fmt.Println("===============================================")
+			for {
+				// Client からのメッセージを読み込む
+				fmt.Println("===============================================")
+				msg := ""
+				err := websocket.Message.Receive(ws, &msg)
+				if err != nil {
+					if err.Error() == "EOF" {
+						fmt.Println("===============================================")
+						fmt.Println(err)
+						c.Logger().Error(err)
+						break
+					}
+					log.Println(fmt.Errorf("read %s", err))	
+					c.Logger().Error(err)
+				}
+
+				// Client からのメッセージを元に返すメッセージを作成し送信する
+				err = websocket.Message.Send(ws, fmt.Sprintf("Server: \"%s\" received!", msg))
+				if err != nil {
+
+					fmt.Println("===============================================")
+					fmt.Println(err)
+					c.Logger().Error(err)
+				}
+			}
+	}).ServeHTTP(c.Response(), c.Request())
+	return nil
 }
