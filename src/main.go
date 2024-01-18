@@ -22,6 +22,8 @@ func main() {
 	userRepository := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepository)
 	userController := controller.NewUserController(userUsecase, *cfg, googleOauthConfig)
-	e := router.NewRouter(userController, *cfg)
+	chatUseCase := usecase.NewChatUsecase(userRepository)
+	chatController := controller.NewChatController(chatUseCase, *cfg, googleOauthConfig)
+	e := router.NewRouter(userController, chatController, *cfg)
 	e.Logger.Fatal(e.Start(":8080"))
 }

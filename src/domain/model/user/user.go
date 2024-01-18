@@ -12,11 +12,15 @@ type User struct {
 	bun.BaseModel `bun:"table:user,alias:u"`
 
 	ID        string    `bun:"id,pk,type:uuid,default:gen_random_uuid()"`
+	UserName 	string    `bun:"type:varchar(255)"`
 	Email     string    `bun:"type:varchar(255)"`
 	Password  string    `bun:"type:varchar(255)"`
+	ImagePath string    `bun:"type:varchar(255)"`
+	IsVerified bool     `bun:"default:false"`
 	GoogleID  string    `bun:"type:varchar(255)"`
 	CreatedAt time.Time `json:"created_at" bun:"default:current_timestamp"`
 	UpdatedAt time.Time `json:"updated_at" bun:"default:current_timestamp"`
+	IsDeleted bool      `json:"is_deleted" bun:"default:false"`
 }
 
 type UserResponse struct {
@@ -24,7 +28,6 @@ type UserResponse struct {
 	Email string `json:"email" bun:"unique"`
 }
 
-// Todo: 共通のレスポンスに切り分ける
 type LonginResponse struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
