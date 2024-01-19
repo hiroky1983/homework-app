@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"homework/config"
 	"homework/usecase"
 	"log"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/websocket"
@@ -25,22 +27,38 @@ func NewChatController(uu usecase.IChatUsecase, cnf config.Config, oauthConf *oa
 	return &chatController{uu, cnf, oauthConf}
 }
 
+type Chat struct {
+	ID  int    `json:"id"`
+	Message string `json:"message"`
+	Sender string `json:"sender"`
+	CreatedAt time.Time `json:"created_at"`
+}
 
 func (cc *chatController)HandleWebSocket(c echo.Context) error {
 	log.Println("Serving at web socket...")
 	websocket.Handler(func(ws *websocket.Conn) {
 			defer ws.Close()
-			// 初回のメッセージを送信
-			err := websocket.Message.Send(ws, "Server: Hello, Next.js!")
-			if err != nil {
-				c.Logger().Error(err)
-			}
-			fmt.Println("====================2===========================")
+			// // 初回のメッセージを送信
+			// err := websocket.Message.Send(ws, "Server: Hello, Next.js!")
+			// if err != nil {
+			// 	c.Logger().Error(err)
+			// }
+			// fmt.Println("====================2===========================")
 			for {
 				// Client からのメッセージを読み込む
 				fmt.Println("==================3=============================")
+				
 				msg := ""
 				err := websocket.Message.Receive(ws, &msg)
+				if msg == "" {
+					return
+				}
+				res := &Chat{
+					ID: 4,
+					Message: msg,
+					Sender: "me",
+					CreatedAt: time.Now(),
+				}
 				if err != nil {
 					if err.Error() == "EOF" {
 						fmt.Println("==================4=============================")
@@ -51,10 +69,16 @@ func (cc *chatController)HandleWebSocket(c echo.Context) error {
 					c.Logger().Error(err)
 				}
 
-			// 	// Client からのメッセージを元に返すメッセージを作成し送信する
-				err = websocket.Message.Send(ws, fmt.Sprintf("Server: \"%s\" received!", msg))
+				r ,err := json.Marshal(res)
 				if err != nil {
+					fmt.Println("====================5===========================")
+					fmt.Println(err)
+					c.Logger().Error(err)
+				}
 
+			// 	// Client からのメッセージを元に返すメッセージを作成し送信する
+				err = websocket.Message.Send(ws, string(r))
+				if err != nil {
 					fmt.Println("====================5===========================")
 					fmt.Println(err)
 					c.Logger().Error(err)
