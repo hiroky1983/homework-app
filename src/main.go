@@ -19,8 +19,8 @@ func main() {
 	}
 	db := db.NewDB(*cfg)
 	googleOauthConfig := cfg.NewGoogleOauthConfig()
-	userRepository := repository.NewUserRepository(db)
-	userUsecase := usecase.NewUserUsecase(userRepository)
+	userRepository := repository.NewUserRepository()
+	userUsecase := usecase.NewUserUsecase(userRepository, db)
 	userController := controller.NewUserController(userUsecase, *cfg, googleOauthConfig)
 	chatUseCase := usecase.NewChatUsecase(userRepository)
 	chatController := controller.NewChatController(chatUseCase, *cfg, googleOauthConfig)

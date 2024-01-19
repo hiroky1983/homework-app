@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/uptrace/bun"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,10 +21,11 @@ type IUserUsecase interface {
 
 type userUsecase struct {
 	ur repository.IUserRepository
+	db *bun.DB
 }
 
-func NewUserUsecase(ur repository.IUserRepository) IUserUsecase {
-	return &userUsecase{ur}
+func NewUserUsecase(ur repository.IUserRepository, db *bun.DB) IUserUsecase {
+	return &userUsecase{ur, db}
 }
 
 func (uu *userUsecase) SignUp(user userModel.User) (userModel.UserResponse, error) {
@@ -31,7 +33,7 @@ func (uu *userUsecase) SignUp(user userModel.User) (userModel.UserResponse, erro
 		return userModel.UserResponse{}, err
 	}
 	storedUser := userModel.User{}
-	if err := uu.ur.GetUserByEmail(&storedUser, user.Email); err != nil {
+	if err := uu.ur.GetUserByEmail(uu.db, &storedUser, user.Email); err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
 		return userModel.UserResponse{}, err
 		}
@@ -47,7 +49,7 @@ func (uu *userUsecase) SignUp(user userModel.User) (userModel.UserResponse, erro
 		Email:    user.Email,
 		Password: string(hash),
 	}
-	if err := uu.ur.CreateUser(&newUser); err != nil {
+	if err := uu.ur.CreateUser(uu.db,&newUser); err != nil {
 		return userModel.UserResponse{}, err
 	}
 	resUser := userModel.UserResponse{
@@ -62,7 +64,7 @@ func (uu *userUsecase) Login(user userModel.User, cnf config.Config) (string, er
 		return "", err
 	}
 	storedUser := userModel.User{}
-	if err := uu.ur.GetUserByEmail(&storedUser, user.Email); err != nil {
+	if err := uu.ur.GetUserByEmail(uu.db, &storedUser, user.Email); err != nil {
 		return "", err
 	}
 	err := bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(user.Password))
@@ -82,11 +84,16 @@ func (uu *userUsecase) Login(user userModel.User, cnf config.Config) (string, er
 
 func (uu *userUsecase) LoginWithGoogle(user userModel.User, cnf config.Config) (string, error) {
 	storedUser := userModel.User{}
-	if err := uu.ur.GetUserByID(&storedUser, user.GoogleID); err != nil {
+	if err := uu.ur.GetUserByID(uu.db,&storedUser, user.GoogleID); err != nil {
 		return "", err
 	}
+	tx, err := uu.db.Begin()
 	if storedUser.GoogleID == "" {
-		if err := uu.ur.CreateUser(&user); err != nil {
+		if err != nil {
+			return "", err
+		}
+		if err := uu.ur.CreateUser(tx, &user); err != nil {
+			tx.Rollback()
 			return "", err
 		}
 		storedUser.ID = user.ID
@@ -97,7 +104,9 @@ func (uu *userUsecase) LoginWithGoogle(user userModel.User, cnf config.Config) (
 	})
 	tokenString, err := token.SignedString([]byte(cnf.Seclet))
 	if err != nil {
+		tx.Rollback()
 		return "", err
 	}
+	tx.Commit()
 	return tokenString, nil
 }
