@@ -111,13 +111,16 @@ func (uc *userController) GoogleAuthCallback(c echo.Context) error {
 	u := user.User{}
 	u.Email = info.Email
 	u.GoogleID = info.UserId
+	u.IsVerified = true
+	var url string
 	tokenString, err := uc.uu.LoginWithGoogle(u, uc.cnf)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+		url = fmt.Sprintf("%s/not-found", uc.cnf.AppURL)
+		return c.Redirect(http.StatusFound, url)
 	}
 
 	cookie.SetCookie(tokenString, uc.cnf.APIDomain, c, time.Now().Add(24*time.Hour))
 
-	url := fmt.Sprintf("%s/top", uc.cnf.AppURL)
+	url = fmt.Sprintf("%s/top", uc.cnf.AppURL)
 	return c.Redirect(http.StatusFound, url)
 }

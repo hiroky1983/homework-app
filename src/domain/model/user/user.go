@@ -11,13 +11,13 @@ import (
 type User struct {
 	bun.BaseModel `bun:"table:user,alias:u"`
 
-	ID        string    `bun:"id,pk,type:uuid,default:gen_random_uuid()"`
-	UserName 	string    `bun:"type:varchar(255)"`
-	Email     string    `bun:"type:varchar(255)"`
-	Password  string    `bun:"type:varchar(255)"`
-	ImagePath string    `bun:"type:varchar(255)"`
-	IsVerified bool     `bun:"default:false"`
-	GoogleID  string    `bun:"type:varchar(255)"`
+	ID        string    `json:"id" bun:"id,pk,type:uuid,default:gen_random_uuid()"`
+	UserName 	string    `json:"user_name" bun:"type:varchar(255)"`
+	Email     string    `json:"email" bun:"type:varchar(255)"`
+	Password  string    `json:"password" bun:"type:varchar(255)"`
+	ImagePath string    `json:"image_path" bun:"type:varchar(255)"`
+	IsVerified bool     `json:"Is_verified" bun:"default:false"`
+	GoogleID  string    `json:"google_id" bun:"type:varchar(255)"`
 	CreatedAt time.Time `json:"created_at" bun:"default:current_timestamp"`
 	UpdatedAt time.Time `json:"updated_at" bun:"default:current_timestamp"`
 	IsDeleted bool      `json:"is_deleted" bun:"default:false"`
