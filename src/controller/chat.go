@@ -38,16 +38,8 @@ func (cc *chatController)HandleWebSocket(c echo.Context) error {
 	log.Println("Serving at web socket...")
 	websocket.Handler(func(ws *websocket.Conn) {
 			defer ws.Close()
-			// // 初回のメッセージを送信
-			// err := websocket.Message.Send(ws, "Server: Hello, Next.js!")
-			// if err != nil {
-			// 	c.Logger().Error(err)
-			// }
-			// fmt.Println("====================2===========================")
 			for {
-				// Client からのメッセージを読み込む
-				fmt.Println("==================3=============================")
-				
+				// Client からのメッセージを読み込む				
 				msg := ""
 				err := websocket.Message.Receive(ws, &msg)
 				if msg == "" {
@@ -61,7 +53,6 @@ func (cc *chatController)HandleWebSocket(c echo.Context) error {
 				}
 				if err != nil {
 					if err.Error() == "EOF" {
-						fmt.Println("==================4=============================")
 						c.Logger().Error(err)
 						break
 					}
@@ -71,7 +62,6 @@ func (cc *chatController)HandleWebSocket(c echo.Context) error {
 
 				r ,err := json.Marshal(res)
 				if err != nil {
-					fmt.Println("====================5===========================")
 					fmt.Println(err)
 					c.Logger().Error(err)
 				}
@@ -79,7 +69,6 @@ func (cc *chatController)HandleWebSocket(c echo.Context) error {
 			// 	// Client からのメッセージを元に返すメッセージを作成し送信する
 				err = websocket.Message.Send(ws, string(r))
 				if err != nil {
-					fmt.Println("====================5===========================")
 					fmt.Println(err)
 					c.Logger().Error(err)
 				}
