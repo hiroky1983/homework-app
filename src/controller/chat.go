@@ -52,6 +52,9 @@ func (cc *chatController) HandleWebSocket(c echo.Context) error {
 				c.Logger().Error(err)
 			}
 
+			if msg == "" {
+				return
+			}
 			req := chat.Chat{
 				Message: msg,
 				UserID:  userID.(string),
