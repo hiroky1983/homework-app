@@ -103,7 +103,7 @@ func (cc *chatController) DeleteChat(c echo.Context) error {
 		return c.JSON(500, err)
 	}
 	fmt.Println(req)
-	if err := cc.cu.Delete(req.ID);err != nil {
+	if err := cc.cu.Delete(req.ID); err != nil {
 		return c.JSON(500, err)
 	}
 

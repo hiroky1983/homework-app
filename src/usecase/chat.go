@@ -41,7 +41,7 @@ func (cu *chatUsecase) List(userID string) ([]chatModel.ChatResponse, error) {
 		return []chatModel.ChatResponse{}, err
 	}
 	res := chatList.NewChatResponse(userID)
-	
+
 	return res, nil
 }
 
