@@ -18,6 +18,7 @@ import (
 type IChatController interface {
 	HandleWebSocket(c echo.Context) error
 	ListChat(c echo.Context) error
+	DeleteChat(c echo.Context) error
 }
 
 type chatController struct {
@@ -94,4 +95,17 @@ func (cc *chatController) ListChat(c echo.Context) error {
 	}
 
 	return c.JSON(200, res)
+}
+
+func (cc *chatController) DeleteChat(c echo.Context) error {
+	req := chat.DeleteChatRequest{}
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(500, err)
+	}
+	fmt.Println(req)
+	if err := cc.cu.Delete(req.ID);err != nil {
+		return c.JSON(500, err)
+	}
+
+	return c.JSON(200, "success")
 }

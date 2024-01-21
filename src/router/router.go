@@ -51,6 +51,7 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, cnf
 	}))
 	chat.GET("/socket", cc.HandleWebSocket)
 	chat.GET("/get", cc.ListChat)
+	chat.PUT("/delete", cc.DeleteChat)
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
 	return e

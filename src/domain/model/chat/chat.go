@@ -23,6 +23,10 @@ type Chat struct {
 	IsDeleted bool      `json:"is_deleted" bun:"default:false"`
 }
 
+type DeleteChatRequest struct {
+	ID uint64 `json:"id"`
+}
+
 type ChatResponse struct {
 	ID        uint64    `json:"id" bun:"primary_key"`
 	Message   string    `json:"message" bun:"notnull"`
