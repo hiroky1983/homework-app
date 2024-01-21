@@ -14,7 +14,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func NewRouter(uc controller.IUserController,cc controller.IChatController, cnf config.Config) *echo.Echo {
+func NewRouter(uc controller.IUserController, cc controller.IChatController, cnf config.Config) *echo.Echo {
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -50,6 +50,7 @@ func NewRouter(uc controller.IUserController,cc controller.IChatController, cnf 
 		TokenLookup: "cookie:token",
 	}))
 	chat.GET("/socket", cc.HandleWebSocket)
+	chat.GET("/get", cc.ListChat)
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
 	return e

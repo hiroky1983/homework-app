@@ -35,7 +35,7 @@ func (uu *userUsecase) SignUp(user userModel.User) (userModel.UserResponse, erro
 	storedUser := userModel.User{}
 	if err := uu.ur.GetUserByEmail(uu.db, &storedUser, user.Email); err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
-		return userModel.UserResponse{}, err
+			return userModel.UserResponse{}, err
 		}
 	}
 	if storedUser.Email != "" {
@@ -49,7 +49,7 @@ func (uu *userUsecase) SignUp(user userModel.User) (userModel.UserResponse, erro
 		Email:    user.Email,
 		Password: string(hash),
 	}
-	if err := uu.ur.CreateUser(uu.db,&newUser); err != nil {
+	if err := uu.ur.CreateUser(uu.db, &newUser); err != nil {
 		return userModel.UserResponse{}, err
 	}
 	resUser := userModel.UserResponse{
@@ -84,7 +84,7 @@ func (uu *userUsecase) Login(user userModel.User, cnf config.Config) (string, er
 
 func (uu *userUsecase) LoginWithGoogle(user userModel.User, cnf config.Config) (string, error) {
 	storedUser := userModel.User{}
-	if err := uu.ur.GetUserByID(uu.db,&storedUser, user.GoogleID); err != nil {
+	if err := uu.ur.GetUserByID(uu.db, &storedUser, user.GoogleID); err != nil {
 		return "", err
 	}
 	tx, err := uu.db.Begin()

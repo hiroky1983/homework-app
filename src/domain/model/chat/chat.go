@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	SenderMe = "me"
+	SenderMe    = "me"
 	SenderOther = "other"
 )
 
@@ -16,7 +16,7 @@ type Chat struct {
 	bun.BaseModel `bun:"table:chat,alias:c"`
 
 	ID        uint64    `json:"id" bun:"id,pk,autoincrement"`
-	Message 	string    `json:"message" bun:"type:varchar(255),notnull"`
+	Message   string    `json:"message" bun:"type:varchar(255),notnull"`
 	UserID    string    `json:"user_id" bun:"type:uuid,notnull"`
 	CreatedAt time.Time `json:"created_at" bun:"default:current_timestamp"`
 	UpdatedAt time.Time `json:"updated_at" bun:"default:current_timestamp"`
@@ -24,9 +24,9 @@ type Chat struct {
 }
 
 type ChatResponse struct {
-	ID    uint64 `json:"id" bun:"primary_key"`
-	Message string `json:"message" bun:"notnull"`
-	Sender	string `json:"sender" bun:"notnull"`
+	ID        uint64    `json:"id" bun:"primary_key"`
+	Message   string    `json:"message" bun:"notnull"`
+	Sender    string    `json:"sender" bun:"notnull"`
 	CreatedAt time.Time `json:"created_at" bun:"default:current_timestamp"`
 }
 
@@ -42,9 +42,9 @@ func (c *Chat) Validate() error {
 
 func (c *Chat) NewChatResponse() ChatResponse {
 	return ChatResponse{
-		ID: c.ID,
-		Message: c.Message,
-		Sender: SenderMe,
+		ID:        c.ID,
+		Message:   c.Message,
+		Sender:    SenderMe,
 		CreatedAt: c.CreatedAt,
 	}
 }

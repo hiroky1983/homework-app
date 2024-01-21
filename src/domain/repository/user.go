@@ -7,12 +7,12 @@ import (
 )
 
 type IUserRepository interface {
-	GetUserByEmail(db DBConn,user *user.User, email string) error
-	CreateUser(db DBConn,user *user.User) error
-	GetUserByID(db DBConn,user *user.User, userID string) error
+	GetUserByEmail(db DBConn, user *user.User, email string) error
+	CreateUser(db DBConn, user *user.User) error
+	GetUserByID(db DBConn, user *user.User, userID string) error
 }
 
-type userRepository struct {}
+type userRepository struct{}
 
 func NewUserRepository() IUserRepository {
 	return &userRepository{}
@@ -25,7 +25,7 @@ func (ur *userRepository) GetUserByEmail(db DBConn, user *user.User, email strin
 	return nil
 }
 
-func (ur *userRepository) CreateUser(db DBConn,user *user.User) error {
+func (ur *userRepository) CreateUser(db DBConn, user *user.User) error {
 	_, err := db.NewInsert().Model(user).Exec(context.Background())
 	if err != nil {
 		return err
