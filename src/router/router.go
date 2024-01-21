@@ -5,6 +5,7 @@ import (
 	"homework/controller"
 	apperror "homework/error"
 	"net/http"
+	"os"
 	"runtime/debug"
 
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -43,8 +44,12 @@ func NewRouter(uc controller.IUserController,cc controller.IChatController, cnf 
 		SigningKey:  []byte(cnf.Seclet),
 		TokenLookup: "cookie:token",
 	}))
-	user.GET("", uc.GetUser)
-	e.GET("/socket", cc.HandleWebSocket)
+	chat := e.Group("/chat")
+	chat.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	chat.GET("/socket", cc.HandleWebSocket)
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
 	return e

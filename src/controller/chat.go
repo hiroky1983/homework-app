@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"homework/config"
+	"homework/domain/model/chat"
 	"homework/usecase"
 	"log"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/websocket"
 	"golang.org/x/oauth2"
@@ -37,26 +39,26 @@ type Chat struct {
 func (cc *chatController)HandleWebSocket(c echo.Context) error {
 	log.Println("Serving at web socket...")
 	websocket.Handler(func(ws *websocket.Conn) {
+		user := c.Get("user").(*jwt.Token)
+		claims := user.Claims.(jwt.MapClaims)
+		userID := claims["user_id"]
 			defer ws.Close()
 			for {
 				// Client からのメッセージを読み込む				
 				msg := ""
-				err := websocket.Message.Receive(ws, &msg)
-				if msg == "" {
-					return
+				if err := websocket.Message.Receive(ws, &msg); err != nil {
+					fmt.Println(err)
+					c.Logger().Error(err)
 				}
-				res := &Chat{
-					ID: 4,
+				
+				req := chat.Chat{
 					Message: msg,
-					Sender: "me",
-					CreatedAt: time.Now(),
+					UserID: userID.(string),
 				}
+
+				res ,err := cc.cu.Create(req)
 				if err != nil {
-					if err.Error() == "EOF" {
-						c.Logger().Error(err)
-						break
-					}
-					log.Println(fmt.Errorf("read %s", err))	
+					fmt.Println(err)
 					c.Logger().Error(err)
 				}
 
