@@ -35,9 +35,11 @@ func (cu *chatUsecase) Create(c chatModel.Chat) (chatModel.ChatResponse, error) 
 }
 
 func (cu *chatUsecase) List(userID string) ([]chatModel.ChatResponse, error) {
-	chatList := []chatModel.ChatResponse{}
+	chatList := chatModel.ChatList{}
 	if err := cu.ur.ListChatByUserID(cu.db, &chatList); err != nil {
 		return []chatModel.ChatResponse{}, err
 	}
-	return chatList, nil
+	res := chatList.NewChatResponse(userID)
+	
+	return res, nil
 }

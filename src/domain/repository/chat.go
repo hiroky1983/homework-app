@@ -7,7 +7,7 @@ import (
 
 type IChatRepository interface {
 	Create(db DBConn, user *chat.Chat) error
-	ListChatByUserID(db DBConn, chatList *[]chat.ChatResponse) error
+	ListChatByUserID(db DBConn, chatList *chat.ChatList) error
 }
 
 type chatRepository struct{}
@@ -25,8 +25,8 @@ func (cr *chatRepository) Create(db DBConn, chat *chat.Chat) error {
 	return nil
 }
 
-func (cr *chatRepository) ListChatByUserID(db DBConn, chatList *[]chat.ChatResponse) error {
-	if err := db.NewSelect().Model((chatList)).Scan(context.Background(), chatList); err != nil {
+func (cr *chatRepository) ListChatByUserID(db DBConn, chatList *chat.ChatList) error {
+	if err := db.NewSelect().Model((chatList)).Where("is_deleted = false").Scan(context.Background(), chatList); err != nil {
 		return err
 	}
 	return nil

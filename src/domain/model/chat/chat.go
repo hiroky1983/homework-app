@@ -30,6 +30,8 @@ type ChatResponse struct {
 	CreatedAt time.Time `json:"created_at" bun:"default:current_timestamp"`
 }
 
+type ChatList []Chat
+
 func (c *Chat) Validate() error {
 	return validation.ValidateStruct(c,
 		validation.Field(
@@ -47,4 +49,23 @@ func (c *Chat) NewChatResponse() ChatResponse {
 		Sender:    SenderMe,
 		CreatedAt: c.CreatedAt,
 	}
+}
+
+func (c *ChatList) NewChatResponse(userID string) []ChatResponse {
+	res := []ChatResponse{}
+	sender := ""
+	for _, v := range *c {
+		if v.UserID == userID {
+			sender = SenderMe
+		} else {
+			sender = SenderOther
+		}
+		res = append(res, ChatResponse{
+			ID:        v.ID,
+			Message:   v.Message,
+			Sender:    sender,
+			CreatedAt: v.CreatedAt,
+		})
+	}
+	return res
 }
