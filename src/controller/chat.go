@@ -51,11 +51,9 @@ func (cc *chatController) HandleWebSocket(c echo.Context) error {
 			if err := websocket.Message.Receive(ws, &msg); err != nil {
 				fmt.Println(err)
 				c.Logger().Error(err)
+				break // エラー発生時にループを終了
 			}
 
-			if msg == "" {
-				return
-			}
 			req := chat.Chat{
 				Message: msg,
 				UserID:  userID.(string),
@@ -80,6 +78,7 @@ func (cc *chatController) HandleWebSocket(c echo.Context) error {
 				c.Logger().Error(err)
 			}
 		}
+
 	}).ServeHTTP(c.Response(), c.Request())
 	return nil
 }
