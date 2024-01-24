@@ -78,13 +78,6 @@ func (uc *userController) CsrfToken(c echo.Context) error {
 	})
 }
 
-func (uc *userController) GetUser(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userID := claims["user_id"]
-	return c.JSON(http.StatusOK, userID)
-}
-
 func (uc *userController) GoogleAuth(c echo.Context) error {
 	token := c.Get("csrf").(string)
 	url := uc.oauthConf.AuthCodeURL(token, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
@@ -123,4 +116,11 @@ func (uc *userController) GoogleAuthCallback(c echo.Context) error {
 
 	url = fmt.Sprintf("%s/top", uc.cnf.AppURL)
 	return c.Redirect(http.StatusFound, url)
+}
+
+func (uc *userController) GetUser(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["user_id"]
+	return c.JSON(http.StatusOK, userID)
 }

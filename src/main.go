@@ -6,7 +6,7 @@ import (
 	"homework/config"
 	"homework/controller"
 	"homework/db"
-	"homework/domain/repository"
+	"homework/gateways/persistence"
 	"homework/router"
 	"homework/usecase"
 )
@@ -19,12 +19,13 @@ func main() {
 	}
 	db := db.NewDB(*cfg)
 	googleOauthConfig := cfg.NewGoogleOauthConfig()
-	userRepository := repository.NewUserRepository()
+	userRepository := persistence.NewUserRepository()
 	userUsecase := usecase.NewUserUsecase(userRepository, db)
 	userController := controller.NewUserController(userUsecase, *cfg, googleOauthConfig)
-	chatRepository := repository.NewChatRepository()
+	chatRepository := persistence.NewChatRepository()
 	chatUseCase := usecase.NewChatUsecase(chatRepository, db)
 	chatController := controller.NewChatController(chatUseCase, *cfg, googleOauthConfig)
-	e := router.NewRouter(userController, chatController, *cfg)
+	mailController := controller.NewMailController(*cfg)
+	e := router.NewRouter(userController, chatController,mailController, *cfg)
 	e.Logger.Fatal(e.Start(":8080"))
 }

@@ -7,7 +7,6 @@ import (
 	"homework/domain/model/chat"
 	"homework/usecase"
 	"log"
-	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -29,13 +28,6 @@ type chatController struct {
 
 func NewChatController(uu usecase.IChatUsecase, cnf config.Config, oauthConf *oauth2.Config) IChatController {
 	return &chatController{uu, cnf, oauthConf}
-}
-
-type Chat struct {
-	ID        int       `json:"id"`
-	Message   string    `json:"message"`
-	Sender    string    `json:"sender"`
-	CreatedAt time.Time `json:"created_at"`
 }
 
 func (cc *chatController) HandleWebSocket(c echo.Context) error {
