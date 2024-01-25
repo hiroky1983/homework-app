@@ -170,3 +170,67 @@ func Test_chatUsecase_Delete(t *testing.T) {
 		})
 	}
 }
+
+func Test_chatUsecase_List(t *testing.T) {
+	id := uuid.New().String()
+	now := time.Now()
+	type fields struct {
+		ur repository.IChatRepository
+		db *bun.DB
+	}
+	type args struct {
+		userID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    []chatModel.ChatResponse
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				ur: &fakerepository.IChatRepositoryMock{
+					ListChatByUserIDFunc: func(db repository.DBConn, chatList *chatModel.ChatList) error {
+						*chatList = append(*chatList, chatModel.Chat{
+							ID:        1,
+							UserID:    id,
+							Message:   "test",
+							CreatedAt: now,
+						})
+						return nil
+					},
+				},
+			},
+			args: args{
+				userID: id,
+			},
+			want: []chatModel.ChatResponse{
+				{
+					ID:        1,
+					Sender:    chatModel.SenderMe,
+					Message:   "test",
+					CreatedAt: now,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cu := &chatUsecase{
+				ur: tt.fields.ur,
+				db: tt.fields.db,
+			}
+			got, err := cu.List(tt.args.userID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("chatUsecase.List() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("chatUsecase.List() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

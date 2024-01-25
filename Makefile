@@ -28,10 +28,10 @@ gen-moq:
 
 lint:
 	docker-compose exec ${APP_NAME}  go fmt ./...
-	docker-compose exec ${APP_NAME}  sh -c 'staticcheck -go 1.0 $$(go list ./... | grep -v "seeder_api_service/gen")'
+	docker-compose exec ${APP_NAME}  sh -c 'staticcheck -go 1.0 $$(go list ./... | grep -v "moq/fakerepository")'
 
 api-test:
-	docker-compose exec app go test -cover ./... -coverprofile=../cover.out
+	docker-compose exec ${APP_NAME} go test -cover ./... -coverprofile=../cover.out
 
 destroy:
 	docker-compose down --rmi all --volumes --remove-orphans
