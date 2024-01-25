@@ -136,12 +136,12 @@ func Test_chatUsecase_Delete(t *testing.T) {
 					DeleteFunc: func(db repository.DBConn, chatID uint64) error {
 						return nil
 					},
-		},
-	},
-		args: args{
-			c: 1,
-		},
-		wantErr: false,
+				},
+			},
+			args: args{
+				c: 1,
+			},
+			wantErr: false,
 		},
 		{
 			name: "failer",
@@ -150,12 +150,12 @@ func Test_chatUsecase_Delete(t *testing.T) {
 					DeleteFunc: func(db repository.DBConn, chatID uint64) error {
 						return errors.New("error")
 					},
-		},
-	},
-		args: args{
-			c: 1,
-		},
-		wantErr: true,
+				},
+			},
+			args: args{
+				c: 1,
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
