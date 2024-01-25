@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	chatModel "homework/domain/model/chat"
 	"homework/domain/repository"
 	"homework/moq/fakerepository"
@@ -83,6 +84,17 @@ func Test_chatUsecase_Create(t *testing.T) {
 				CreatedAt: now,
 			},
 			wantErr: false,
+		},
+		{
+			name: "failer",
+			fields: fields{
+				ur: &fakerepository.IChatRepositoryMock{
+					CreateFunc: func(db repository.DBConn, user *chatModel.Chat) error {
+						return errors.New("error")
+					},
+				},
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
