@@ -114,3 +114,59 @@ func Test_chatUsecase_Create(t *testing.T) {
 		})
 	}
 }
+
+func Test_chatUsecase_Delete(t *testing.T) {
+	type fields struct {
+		ur repository.IChatRepository
+		db *bun.DB
+	}
+	type args struct {
+		c uint64
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				ur: &fakerepository.IChatRepositoryMock{
+					DeleteFunc: func(db repository.DBConn, chatID uint64) error {
+						return nil
+					},
+		},
+	},
+		args: args{
+			c: 1,
+		},
+		wantErr: false,
+		},
+		{
+			name: "failer",
+			fields: fields{
+				ur: &fakerepository.IChatRepositoryMock{
+					DeleteFunc: func(db repository.DBConn, chatID uint64) error {
+						return errors.New("error")
+					},
+		},
+	},
+		args: args{
+			c: 1,
+		},
+		wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cu := &chatUsecase{
+				ur: tt.fields.ur,
+				db: tt.fields.db,
+			}
+			if err := cu.Delete(tt.args.c); (err != nil) != tt.wantErr {
+				t.Errorf("chatUsecase.Delete() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
