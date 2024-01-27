@@ -22,6 +22,10 @@ services:
       GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID}
       GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET}
       GOOGLE_OAUTH_REDIRECT_URL: ${GOOGLE_OAUTH_REDIRECT_URL}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
     working_dir: /go/src
     volumes:
       - ./src:/go/src
@@ -45,6 +49,14 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PW}
       POSTGRES_DB: ${POSTGRES_DB}
     restart: always
+    networks:
+      - homework
+
+  mailhog:
+    image: "mailhog/mailhog:latest"
+    ports:
+      - "1025:1025"
+      - "8025:8025"
     networks:
       - homework
 

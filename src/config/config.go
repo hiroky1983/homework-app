@@ -24,6 +24,10 @@ type Config struct {
 	GoogleOAuthClientID     string `envconfig:"GOOGLE_OAUTH_CLIENT_ID" required:"true"`
 	GoogleOAuthClientSecret string `envconfig:"GOOGLE_OAUTH_CLIENT_SECRET" required:"true"`
 	GoogleOAuthRedirectURL  string `envconfig:"GOOGLE_OAUTH_REDIRECT_URL" required:"true"`
+	SMTPHost                string `envconfig:"SMTP_HOST" required:"true"`
+	SMTPPort                string `envconfig:"SMTP_PORT" required:"true"`
+	SMTPUsername            string `envconfig:"SMTP_USERNAME" required:"true"`
+	SMTPPassword            string `envconfig:"SMTP_PASSWORD" required:"true"`
 }
 
 func NewConfig(ctx context.Context) (*Config, error) {
