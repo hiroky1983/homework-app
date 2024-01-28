@@ -134,11 +134,9 @@ func (uc *userController) CreateProfile(c echo.Context) error {
 	if err := c.Bind(&us); err != nil {
 		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
 	}
-	fmt.Printf("=====:%s\n",us.UserName)
 	user := user.User{}
 	user.ID = userID.(string)
 	user.UserName = us.UserName
-	fmt.Printf("=====:%s\n",user.UserName)
 	if err := uc.uu.CreateProfile(user); err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
