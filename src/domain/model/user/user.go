@@ -34,7 +34,7 @@ type LonginResponse struct {
 }
 
 type UserProfileRequest struct {
-	UserName  string `json:"userName"`
+	UserName string `json:"userName"`
 }
 
 func (u *User) Validate() error {

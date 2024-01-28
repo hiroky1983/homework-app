@@ -14,7 +14,7 @@ import (
 )
 
 type IUserUsecase interface {
-	SignUp(user userModel.User) (userModel.UserResponse, error)
+	SignUp(user userModel.User, conf config.Config) (userModel.UserResponse, error)
 	Login(user userModel.User, conf config.Config) (string, error)
 	LoginWithGoogle(user userModel.User, cnf config.Config) (string, error)
 	CreateProfile(user userModel.User) error
@@ -22,14 +22,15 @@ type IUserUsecase interface {
 
 type userUsecase struct {
 	ur repository.IUserRepository
+	mu			repository.Mail
 	db *bun.DB
 }
 
-func NewUserUsecase(ur repository.IUserRepository, db *bun.DB) IUserUsecase {
-	return &userUsecase{ur, db}
+func NewUserUsecase(ur repository.IUserRepository, mr repository.Mail ,db *bun.DB) IUserUsecase {
+	return &userUsecase{ur,mr , db}
 }
 
-func (uu *userUsecase) SignUp(user userModel.User) (userModel.UserResponse, error) {
+func (uu *userUsecase) SignUp(user userModel.User , cnf config.Config) (userModel.UserResponse, error) {
 	if err := user.Validate(); err != nil {
 		return userModel.UserResponse{}, err
 	}
@@ -51,6 +52,14 @@ func (uu *userUsecase) SignUp(user userModel.User) (userModel.UserResponse, erro
 		Password: string(hash),
 	}
 	if err := uu.ur.CreateUser(uu.db, &newUser); err != nil {
+		return userModel.UserResponse{}, err
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": storedUser.ID,
+		"exp":     time.Now().Add(time.Hour * 12).Unix(),
+	})
+	tokenString, err := token.SignedString([]byte(cnf.Seclet))
+	if err := uu.mu.SendMail(newUser.Email, tokenString, cnf); err != nil {
 		return userModel.UserResponse{}, err
 	}
 	resUser := userModel.UserResponse{

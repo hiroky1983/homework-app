@@ -10,7 +10,7 @@ import (
 
 type User struct{}
 
-func NewUserRepository() *User {
+func NewUser() *User {
 	return &User{}
 }
 

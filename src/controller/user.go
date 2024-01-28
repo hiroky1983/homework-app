@@ -44,7 +44,7 @@ func (uc *userController) SignUp(c echo.Context) error {
 	if err := c.Bind(&u); err != nil {
 		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
 	}
-	userRes, err := uc.uu.SignUp(u)
+	userRes, err := uc.uu.SignUp(u, uc.cnf)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
@@ -145,4 +145,3 @@ func (uc *userController) CreateProfile(c echo.Context) error {
 		"message": "success",
 	})
 }
-
