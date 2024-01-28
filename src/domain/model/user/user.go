@@ -33,6 +33,10 @@ type LonginResponse struct {
 	Message string `json:"message"`
 }
 
+type UserProfileRequest struct {
+	UserName  string `json:"userName"`
+}
+
 func (u *User) Validate() error {
 	return validation.ValidateStruct(u,
 		validation.Field(

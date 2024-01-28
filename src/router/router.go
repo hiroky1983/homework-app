@@ -44,6 +44,7 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, cnf
 		SigningKey:  []byte(cnf.Seclet),
 		TokenLookup: "cookie:token",
 	}))
+	user.POST("/create_profile", uc.CreateProfile)
 	chat := e.Group("/chat")
 	chat.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey:  []byte(os.Getenv("SECRET")),

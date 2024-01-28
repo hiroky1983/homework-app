@@ -17,6 +17,7 @@ type IUserUsecase interface {
 	SignUp(user userModel.User) (userModel.UserResponse, error)
 	Login(user userModel.User, conf config.Config) (string, error)
 	LoginWithGoogle(user userModel.User, cnf config.Config) (string, error)
+	CreateProfile(user userModel.User) error
 }
 
 type userUsecase struct {
@@ -109,4 +110,11 @@ func (uu *userUsecase) LoginWithGoogle(user userModel.User, cnf config.Config) (
 	}
 	tx.Commit()
 	return tokenString, nil
+}
+
+func (uu *userUsecase) CreateProfile(user userModel.User) error {
+	if err := uu.ur.UpdateUser(uu.db, &user); err != nil {
+		return err
+	}
+	return nil
 }

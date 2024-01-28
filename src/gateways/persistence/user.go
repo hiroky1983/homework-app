@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"homework/domain/model/user"
 	"homework/domain/repository"
 )
@@ -22,6 +23,15 @@ func (ur *User) GetUserByEmail(db repository.DBConn, u *user.User, email string)
 
 func (ur *User) CreateUser(db repository.DBConn, u *user.User) error {
 	_, err := db.NewInsert().Model(u).Exec(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ur *User) UpdateUser(db repository.DBConn, u *user.User) error {
+	fmt.Println(u)
+	_, err := db.NewUpdate().Model(u).Set("user_name = ?", u.UserName).Set("updated_at = NOW()").Where("id=?", u.ID).Exec(context.Background())
 	if err != nil {
 		return err
 	}

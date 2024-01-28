@@ -25,7 +25,6 @@ func main() {
 	chatRepository := persistence.NewChatRepository()
 	chatUseCase := usecase.NewChatUsecase(chatRepository, db)
 	chatController := controller.NewChatController(chatUseCase, *cfg, googleOauthConfig)
-	mailController := controller.NewMailController(*cfg)
-	e := router.NewRouter(userController, chatController,mailController, *cfg)
+	e := router.NewRouter(userController, chatController,*cfg)
 	e.Logger.Fatal(e.Start(":8080"))
 }

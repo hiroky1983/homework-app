@@ -26,6 +26,7 @@ type IUserController interface {
 	GetUser(c echo.Context) error
 	GoogleAuth(c echo.Context) error
 	GoogleAuthCallback(c echo.Context) error
+	CreateProfile(c echo.Context) error
 }
 
 type userController struct {
@@ -124,3 +125,26 @@ func (uc *userController) GetUser(c echo.Context) error {
 	userID := claims["user_id"]
 	return c.JSON(http.StatusOK, userID)
 }
+
+func (uc *userController) CreateProfile(c echo.Context) error {
+	u := c.Get("user").(*jwt.Token)
+	claims := u.Claims.(jwt.MapClaims)
+	userID := claims["user_id"]
+	us := user.UserProfileRequest{}
+	if err := c.Bind(&us); err != nil {
+		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
+	}
+	fmt.Printf("=====:%s\n",us.UserName)
+	user := user.User{}
+	user.ID = userID.(string)
+	user.UserName = us.UserName
+	fmt.Printf("=====:%s\n",user.UserName)
+	if err := uc.uu.CreateProfile(user); err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"code":    http.StatusOK,
+		"message": "success",
+	})
+}
+
