@@ -37,10 +37,10 @@ type userController struct {
 	ur        repository.IUserRepository
 	cnf       config.Config
 	oauthConf *oauth2.Config
-	db *bun.DB
+	db        *bun.DB
 }
 
-func NewUserController(uu usecase.IUserUsecase,ur repository.IUserRepository, cnf config.Config, oauthConf *oauth2.Config, 	db *bun.DB) IUserController {
+func NewUserController(uu usecase.IUserUsecase, ur repository.IUserRepository, cnf config.Config, oauthConf *oauth2.Config, db *bun.DB) IUserController {
 	return &userController{uu, ur, cnf, oauthConf, db}
 }
 
@@ -49,7 +49,7 @@ func (uc *userController) SignUp(c echo.Context) error {
 	if err := c.Bind(&u); err != nil {
 		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
 	}
-	userRes,tokenString, err := uc.uu.SignUp(u, uc.cnf)
+	userRes, tokenString, err := uc.uu.SignUp(u, uc.cnf)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}

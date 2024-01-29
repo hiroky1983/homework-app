@@ -37,7 +37,7 @@ func (ur *User) UpdateUser(db repository.DBConn, u *user.User) error {
 }
 
 func (ur *User) UpdateIsVerifiedUser(db repository.DBConn, userID string) error {
-	_ ,err := db.NewUpdate().Model(&user.User{}).Set("is_verified = ?", true).Where("id = ?", userID).Exec(context.Background())
+	_, err := db.NewUpdate().Model(&user.User{}).Set("is_verified = ?", true).Where("id = ?", userID).Exec(context.Background())
 	if err != nil {
 		return err
 	}
