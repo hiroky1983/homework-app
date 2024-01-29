@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"homework/config"
 	"homework/domain/model/user"
+	"homework/domain/repository"
 	apperror "homework/error"
 	"homework/middleware/cookie"
 	"homework/usecase"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
+	"github.com/uptrace/bun"
 	"golang.org/x/oauth2"
 	v2 "google.golang.org/api/oauth2/v2"
 	"google.golang.org/api/option"
@@ -27,16 +29,19 @@ type IUserController interface {
 	GoogleAuth(c echo.Context) error
 	GoogleAuthCallback(c echo.Context) error
 	CreateProfile(c echo.Context) error
+	SignUpCallback(c echo.Context) error
 }
 
 type userController struct {
 	uu        usecase.IUserUsecase
+	ur        repository.IUserRepository
 	cnf       config.Config
 	oauthConf *oauth2.Config
+	db *bun.DB
 }
 
-func NewUserController(uu usecase.IUserUsecase, cnf config.Config, oauthConf *oauth2.Config) IUserController {
-	return &userController{uu, cnf, oauthConf}
+func NewUserController(uu usecase.IUserUsecase,ur repository.IUserRepository, cnf config.Config, oauthConf *oauth2.Config, 	db *bun.DB) IUserController {
+	return &userController{uu, ur, cnf, oauthConf, db}
 }
 
 func (uc *userController) SignUp(c echo.Context) error {
@@ -44,10 +49,11 @@ func (uc *userController) SignUp(c echo.Context) error {
 	if err := c.Bind(&u); err != nil {
 		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
 	}
-	userRes, err := uc.uu.SignUp(u, uc.cnf)
+	userRes,tokenString, err := uc.uu.SignUp(u, uc.cnf)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
+	cookie.SetCookie(tokenString, uc.cnf.APIDomain, c, time.Now().Add(24*time.Hour))
 	return c.JSON(http.StatusCreated, userRes)
 }
 
@@ -144,4 +150,21 @@ func (uc *userController) CreateProfile(c echo.Context) error {
 		"code":    http.StatusOK,
 		"message": "success",
 	})
+}
+
+func (uc *userController) SignUpCallback(c echo.Context) error {
+	u := c.Get("user").(*jwt.Token)
+	claims, ok := u.Claims.(jwt.MapClaims)
+	if !ok || !u.Valid {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(fmt.Errorf("invalid token"), http.StatusInternalServerError))
+	}
+	userID := claims["user_id"]
+	user := user.User{}
+	user.ID = userID.(string)
+
+	if err := uc.ur.UpdateIsVerifiedUser(uc.db, user.ID); err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
+
+	return c.Redirect(http.StatusFound, "http://localhost:3000/profile")
 }

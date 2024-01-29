@@ -22,7 +22,7 @@ func main() {
 	userRepository := persistence.NewUser()
 	mailRepository := persistence.NewMail()
 	userUsecase := usecase.NewUserUsecase(userRepository,mailRepository, db)
-	userController := controller.NewUserController(userUsecase, *cfg, googleOauthConfig)
+	userController := controller.NewUserController(userUsecase,userRepository, *cfg, googleOauthConfig, db)
 	chatRepository := persistence.NewChatRepository()
 	chatUseCase := usecase.NewChatUsecase(chatRepository, db)
 	chatController := controller.NewChatController(chatUseCase, *cfg, googleOauthConfig)

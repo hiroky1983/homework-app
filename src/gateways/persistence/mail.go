@@ -17,9 +17,9 @@ func NewMail() *Mail {
 
 func (m *Mail) SendMail(email, token string, cnf config.Config) error {
 	subject := "アカウント本登録のお願い"
-	body := "http://localhost:3000/top"
+	body := fmt.Sprintf("http://localhost:8080/user/confirm?token=%s", token)
 	from := "noreply@example.net"
-	receiver := []string{"hirockysan1983@gmail.com"}
+	receiver := []string{email}
 
 	smtpServer := fmt.Sprintf("%s:%d", cnf.SMTPHost, 1025)
 	auth := smtp.CRAMMD5Auth(cnf.SMTPUsername, cnf.SMTPPassword)

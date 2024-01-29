@@ -3,7 +3,6 @@ package persistence
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"homework/domain/model/user"
 	"homework/domain/repository"
 )
@@ -30,8 +29,15 @@ func (ur *User) CreateUser(db repository.DBConn, u *user.User) error {
 }
 
 func (ur *User) UpdateUser(db repository.DBConn, u *user.User) error {
-	fmt.Println(u)
 	_, err := db.NewUpdate().Model(u).Set("user_name = ?", u.UserName).Set("updated_at = NOW()").Where("id=?", u.ID).Exec(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ur *User) UpdateIsVerifiedUser(db repository.DBConn, userID string) error {
+	_ ,err := db.NewUpdate().Model(&user.User{}).Set("is_verified = ?", true).Where("id = ?", userID).Exec(context.Background())
 	if err != nil {
 		return err
 	}
