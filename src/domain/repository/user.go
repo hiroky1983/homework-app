@@ -11,4 +11,5 @@ type IUserRepository interface {
 	GetUserByID(db DBConn, user *user.User, userID string) error
 	UpdateUser(db DBConn, u *user.User) error
 	UpdateIsVerifiedUser(db DBConn, userID string) error
+	GetProfile(db DBConn, u *user.User, userID string) error
 }

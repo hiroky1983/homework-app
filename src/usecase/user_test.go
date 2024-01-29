@@ -24,9 +24,7 @@ func Test_userUsecase_SignUp(t *testing.T) {
 		args    args
 		want    userModel.UserResponse
 		wantErr bool
-	}{
-
-	}
+	}{}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			uu := &userUsecase{

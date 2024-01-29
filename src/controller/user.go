@@ -129,7 +129,12 @@ func (uc *userController) GetUser(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	userID := claims["user_id"]
-	return c.JSON(http.StatusOK, userID)
+	u, err := uc.uu.Get(userID.(string))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
+
+	return c.JSON(http.StatusOK, u)
 }
 
 func (uc *userController) CreateProfile(c echo.Context) error {

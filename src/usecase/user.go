@@ -3,6 +3,7 @@ package usecase
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"homework/config"
 	userModel "homework/domain/model/user"
 	"homework/domain/repository"
@@ -16,6 +17,7 @@ type IUserUsecase interface {
 	Login(user userModel.User, conf config.Config) (string, error)
 	LoginWithGoogle(user userModel.User, cnf config.Config) (string, error)
 	CreateProfile(user userModel.User) error
+	Get(userID string) (userModel.User, error)
 }
 
 type userUsecase struct {
@@ -128,4 +130,13 @@ func (uu *userUsecase) CreateProfile(user userModel.User) error {
 		return err
 	}
 	return nil
+}
+
+func (uu *userUsecase) Get(userID string) (userModel.User, error) {
+	user := userModel.User{}
+	if err := uu.ur.GetProfile(uu.db, &user, userID); err != nil {
+		return userModel.User{}, err
+	}
+	fmt.Println(user)
+	return user, nil
 }

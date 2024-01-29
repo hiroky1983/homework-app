@@ -53,3 +53,10 @@ func (ur *User) GetUserByID(db repository.DBConn, u *user.User, googleID string)
 	}
 	return nil
 }
+
+func (ur *User) GetProfile(db repository.DBConn, u *user.User, userID string) error {
+	if err := db.NewSelect().Model((u)).Where("id=?", userID).Scan(context.Background()); err != nil {
+		return err
+	}
+	return nil
+}
