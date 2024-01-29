@@ -61,7 +61,7 @@ func (uu *userUsecase) SignUp(user userModel.User, cnf config.Config) (userModel
 		return userModel.UserResponse{}, "", err
 	}
 
-	tokenString ,err := storedUser.GenerateToken(cnf)
+	tokenString ,err := newUser.GenerateToken(cnf)
 	if err != nil {
 		tx.Rollback()
 		return userModel.UserResponse{}, "", err
