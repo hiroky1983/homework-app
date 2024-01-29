@@ -6,9 +6,7 @@ import (
 	"homework/config"
 	userModel "homework/domain/model/user"
 	"homework/domain/repository"
-	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/uptrace/bun"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -61,11 +59,7 @@ func (uu *userUsecase) SignUp(user userModel.User, cnf config.Config) (userModel
 		return userModel.UserResponse{}, "", err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": storedUser.ID,
-		"exp":     time.Now().Add(time.Hour * 12).Unix(),
-	})
-	tokenString, err := token.SignedString([]byte(cnf.Seclet))
+	tokenString ,err := storedUser.GenerateToken(cnf)
 	if err != nil {
 		tx.Rollback()
 		return userModel.UserResponse{}, "", err
@@ -95,11 +89,8 @@ func (uu *userUsecase) Login(user userModel.User, cnf config.Config) (string, er
 	if err != nil {
 		return "", err
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": storedUser.ID,
-		"exp":     time.Now().Add(time.Hour * 12).Unix(),
-	})
-	tokenString, err := token.SignedString([]byte(cnf.Seclet))
+
+	tokenString, err := storedUser.GenerateToken(cnf)
 	if err != nil {
 		return "", err
 	}
@@ -122,11 +113,8 @@ func (uu *userUsecase) LoginWithGoogle(user userModel.User, cnf config.Config) (
 		}
 		storedUser.ID = user.ID
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": storedUser.ID,
-		"exp":     time.Now().Add(time.Hour * 12).Unix(),
-	})
-	tokenString, err := token.SignedString([]byte(cnf.Seclet))
+
+	tokenString, err := storedUser.GenerateToken(cnf)
 	if err != nil {
 		tx.Rollback()
 		return "", err

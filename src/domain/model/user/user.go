@@ -1,10 +1,12 @@
 package user
 
 import (
+	"homework/config"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
+	"github.com/golang-jwt/jwt"
 	"github.com/uptrace/bun"
 )
 
@@ -51,4 +53,16 @@ func (u *User) Validate() error {
 			validation.RuneLength(8, 30).Error("limited min 8 max 30 char"),
 		),
 	)
+}
+
+func (u *User) GenerateToken(cnf config.Config) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": u.ID,
+		"exp":     time.Now().Add(time.Hour * 12).Unix(),
+	})
+	tokenString, err := token.SignedString([]byte(cnf.Seclet))
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
 }
