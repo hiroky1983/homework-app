@@ -22,11 +22,20 @@ var _ repository.IUserRepository = &IUserRepositoryMock{}
 //			CreateUserFunc: func(db repository.DBConn, userMoqParam *user.User) error {
 //				panic("mock out the CreateUser method")
 //			},
+//			GetProfileFunc: func(db repository.DBConn, u *user.User, userID string) error {
+//				panic("mock out the GetProfile method")
+//			},
 //			GetUserByEmailFunc: func(db repository.DBConn, userMoqParam *user.User, email string) error {
 //				panic("mock out the GetUserByEmail method")
 //			},
 //			GetUserByIDFunc: func(db repository.DBConn, userMoqParam *user.User, userID string) error {
 //				panic("mock out the GetUserByID method")
+//			},
+//			UpdateIsVerifiedUserFunc: func(db repository.DBConn, userID string) error {
+//				panic("mock out the UpdateIsVerifiedUser method")
+//			},
+//			UpdateUserFunc: func(db repository.DBConn, u *user.User) error {
+//				panic("mock out the UpdateUser method")
 //			},
 //		}
 //
@@ -38,11 +47,20 @@ type IUserRepositoryMock struct {
 	// CreateUserFunc mocks the CreateUser method.
 	CreateUserFunc func(db repository.DBConn, userMoqParam *user.User) error
 
+	// GetProfileFunc mocks the GetProfile method.
+	GetProfileFunc func(db repository.DBConn, u *user.User, userID string) error
+
 	// GetUserByEmailFunc mocks the GetUserByEmail method.
 	GetUserByEmailFunc func(db repository.DBConn, userMoqParam *user.User, email string) error
 
 	// GetUserByIDFunc mocks the GetUserByID method.
 	GetUserByIDFunc func(db repository.DBConn, userMoqParam *user.User, userID string) error
+
+	// UpdateIsVerifiedUserFunc mocks the UpdateIsVerifiedUser method.
+	UpdateIsVerifiedUserFunc func(db repository.DBConn, userID string) error
+
+	// UpdateUserFunc mocks the UpdateUser method.
+	UpdateUserFunc func(db repository.DBConn, u *user.User) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -52,6 +70,15 @@ type IUserRepositoryMock struct {
 			Db repository.DBConn
 			// UserMoqParam is the userMoqParam argument value.
 			UserMoqParam *user.User
+		}
+		// GetProfile holds details about calls to the GetProfile method.
+		GetProfile []struct {
+			// Db is the db argument value.
+			Db repository.DBConn
+			// U is the u argument value.
+			U *user.User
+			// UserID is the userID argument value.
+			UserID string
 		}
 		// GetUserByEmail holds details about calls to the GetUserByEmail method.
 		GetUserByEmail []struct {
@@ -71,10 +98,27 @@ type IUserRepositoryMock struct {
 			// UserID is the userID argument value.
 			UserID string
 		}
+		// UpdateIsVerifiedUser holds details about calls to the UpdateIsVerifiedUser method.
+		UpdateIsVerifiedUser []struct {
+			// Db is the db argument value.
+			Db repository.DBConn
+			// UserID is the userID argument value.
+			UserID string
+		}
+		// UpdateUser holds details about calls to the UpdateUser method.
+		UpdateUser []struct {
+			// Db is the db argument value.
+			Db repository.DBConn
+			// U is the u argument value.
+			U *user.User
+		}
 	}
-	lockCreateUser     sync.RWMutex
-	lockGetUserByEmail sync.RWMutex
-	lockGetUserByID    sync.RWMutex
+	lockCreateUser           sync.RWMutex
+	lockGetProfile           sync.RWMutex
+	lockGetUserByEmail       sync.RWMutex
+	lockGetUserByID          sync.RWMutex
+	lockUpdateIsVerifiedUser sync.RWMutex
+	lockUpdateUser           sync.RWMutex
 }
 
 // CreateUser calls CreateUserFunc.
@@ -110,6 +154,46 @@ func (mock *IUserRepositoryMock) CreateUserCalls() []struct {
 	mock.lockCreateUser.RLock()
 	calls = mock.calls.CreateUser
 	mock.lockCreateUser.RUnlock()
+	return calls
+}
+
+// GetProfile calls GetProfileFunc.
+func (mock *IUserRepositoryMock) GetProfile(db repository.DBConn, u *user.User, userID string) error {
+	if mock.GetProfileFunc == nil {
+		panic("IUserRepositoryMock.GetProfileFunc: method is nil but IUserRepository.GetProfile was just called")
+	}
+	callInfo := struct {
+		Db     repository.DBConn
+		U      *user.User
+		UserID string
+	}{
+		Db:     db,
+		U:      u,
+		UserID: userID,
+	}
+	mock.lockGetProfile.Lock()
+	mock.calls.GetProfile = append(mock.calls.GetProfile, callInfo)
+	mock.lockGetProfile.Unlock()
+	return mock.GetProfileFunc(db, u, userID)
+}
+
+// GetProfileCalls gets all the calls that were made to GetProfile.
+// Check the length with:
+//
+//	len(mockedIUserRepository.GetProfileCalls())
+func (mock *IUserRepositoryMock) GetProfileCalls() []struct {
+	Db     repository.DBConn
+	U      *user.User
+	UserID string
+} {
+	var calls []struct {
+		Db     repository.DBConn
+		U      *user.User
+		UserID string
+	}
+	mock.lockGetProfile.RLock()
+	calls = mock.calls.GetProfile
+	mock.lockGetProfile.RUnlock()
 	return calls
 }
 
@@ -190,5 +274,77 @@ func (mock *IUserRepositoryMock) GetUserByIDCalls() []struct {
 	mock.lockGetUserByID.RLock()
 	calls = mock.calls.GetUserByID
 	mock.lockGetUserByID.RUnlock()
+	return calls
+}
+
+// UpdateIsVerifiedUser calls UpdateIsVerifiedUserFunc.
+func (mock *IUserRepositoryMock) UpdateIsVerifiedUser(db repository.DBConn, userID string) error {
+	if mock.UpdateIsVerifiedUserFunc == nil {
+		panic("IUserRepositoryMock.UpdateIsVerifiedUserFunc: method is nil but IUserRepository.UpdateIsVerifiedUser was just called")
+	}
+	callInfo := struct {
+		Db     repository.DBConn
+		UserID string
+	}{
+		Db:     db,
+		UserID: userID,
+	}
+	mock.lockUpdateIsVerifiedUser.Lock()
+	mock.calls.UpdateIsVerifiedUser = append(mock.calls.UpdateIsVerifiedUser, callInfo)
+	mock.lockUpdateIsVerifiedUser.Unlock()
+	return mock.UpdateIsVerifiedUserFunc(db, userID)
+}
+
+// UpdateIsVerifiedUserCalls gets all the calls that were made to UpdateIsVerifiedUser.
+// Check the length with:
+//
+//	len(mockedIUserRepository.UpdateIsVerifiedUserCalls())
+func (mock *IUserRepositoryMock) UpdateIsVerifiedUserCalls() []struct {
+	Db     repository.DBConn
+	UserID string
+} {
+	var calls []struct {
+		Db     repository.DBConn
+		UserID string
+	}
+	mock.lockUpdateIsVerifiedUser.RLock()
+	calls = mock.calls.UpdateIsVerifiedUser
+	mock.lockUpdateIsVerifiedUser.RUnlock()
+	return calls
+}
+
+// UpdateUser calls UpdateUserFunc.
+func (mock *IUserRepositoryMock) UpdateUser(db repository.DBConn, u *user.User) error {
+	if mock.UpdateUserFunc == nil {
+		panic("IUserRepositoryMock.UpdateUserFunc: method is nil but IUserRepository.UpdateUser was just called")
+	}
+	callInfo := struct {
+		Db repository.DBConn
+		U  *user.User
+	}{
+		Db: db,
+		U:  u,
+	}
+	mock.lockUpdateUser.Lock()
+	mock.calls.UpdateUser = append(mock.calls.UpdateUser, callInfo)
+	mock.lockUpdateUser.Unlock()
+	return mock.UpdateUserFunc(db, u)
+}
+
+// UpdateUserCalls gets all the calls that were made to UpdateUser.
+// Check the length with:
+//
+//	len(mockedIUserRepository.UpdateUserCalls())
+func (mock *IUserRepositoryMock) UpdateUserCalls() []struct {
+	Db repository.DBConn
+	U  *user.User
+} {
+	var calls []struct {
+		Db repository.DBConn
+		U  *user.User
+	}
+	mock.lockUpdateUser.RLock()
+	calls = mock.calls.UpdateUser
+	mock.lockUpdateUser.RUnlock()
 	return calls
 }
