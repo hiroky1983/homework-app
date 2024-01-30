@@ -3,7 +3,6 @@ package usecase
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"homework/config"
 	userModel "homework/domain/model/user"
 	"homework/domain/repository"
@@ -137,6 +136,6 @@ func (uu *userUsecase) Get(userID string) (userModel.User, error) {
 	if err := uu.ur.GetProfile(uu.db, &user, userID); err != nil {
 		return userModel.User{}, err
 	}
-	fmt.Println(user)
+
 	return user, nil
 }

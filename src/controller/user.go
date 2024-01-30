@@ -158,10 +158,15 @@ func (uc *userController) CreateProfile(c echo.Context) error {
 }
 
 func (uc *userController) SignUpCallback(c echo.Context) error {
+	t := c.QueryParam("token")
 	u := c.Get("user").(*jwt.Token)
 	claims, ok := u.Claims.(jwt.MapClaims)
 	if !ok || !u.Valid {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(fmt.Errorf("invalid token"), http.StatusInternalServerError))
+	}
+	exp := claims.VerifyExpiresAt(time.Now().Unix(), true)
+	if u.Raw != t || !exp {
+		return c.Redirect(http.StatusFound, "http://localhost:3000/expire")
 	}
 	userID := claims["user_id"]
 	user := user.User{}
