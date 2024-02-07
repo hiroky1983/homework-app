@@ -9,6 +9,7 @@ import (
 	"log"
 
 	"github.com/golang-jwt/jwt/v4"
+
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/websocket"
 	"golang.org/x/oauth2"
@@ -26,16 +27,61 @@ type chatController struct {
 	oauthConf *oauth2.Config
 }
 
+// var (
+// 	upgrader = websocket.Upgrader{}
+// )
+
 func NewChatController(uu usecase.IChatUsecase, cnf config.Config, oauthConf *oauth2.Config) IChatController {
 	return &chatController{uu, cnf, oauthConf}
 }
 
 func (cc *chatController) HandleWebSocket(c echo.Context) error {
 	log.Println("Serving at web socket...")
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["user_id"]
+	// ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
+	// if err != nil {
+	// 	fmt.Printf("Failed to set websocket upgrade: %+v\n", err)
+	// 	return err
+	// }
+	// defer ws.Close()
+
+	// for {
+	// 	// Write
+	// 	message := []byte("Hello, Client!")
+	// 	err := ws.WriteMessage(websocket.TextMessage, message)
+	// 	if err != nil {
+	// 		c.Logger().Error(err)
+	// 	}
+
+	// 	req := chat.Chat{
+	// 		Message: "Hello, Server!",
+	// 		UserID:  userID.(string),
+	// 	}
+
+	// 	res, err := cc.cu.Create(req)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 		c.Logger().Error(err)
+	// 	}
+
+	// 	r, err := json.Marshal(res)
+	// 	fmt.Println(r)
+	// 		if err != nil {
+	// 			fmt.Println(err)
+	// 			c.Logger().Error(err)
+	// 		}
+	// 	// Read
+	// 	a, msg, err := ws.ReadMessage()
+	// 	fmt.Println(a)
+	// 	if err != nil {
+	// 		c.Logger().Error(err)
+	// 	}
+	// 	fmt.Printf("%s\n", msg)
+	// }
+
 	websocket.Handler(func(ws *websocket.Conn) {
-		user := c.Get("user").(*jwt.Token)
-		claims := user.Claims.(jwt.MapClaims)
-		userID := claims["user_id"]
 		defer ws.Close()
 		for {
 			// Client からのメッセージを読み込む

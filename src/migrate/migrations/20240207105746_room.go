@@ -2,7 +2,7 @@ package migrations
 
 import (
 	"context"
-	"homework/domain/model/chat"
+	"homework/domain/model/room"
 
 	"github.com/uptrace/bun"
 )
@@ -10,7 +10,7 @@ import (
 func init() {
 	Migrations.MustRegister(func(ctx context.Context, db *bun.DB) error {
 		_, err := db.NewCreateTable().
-			Model((*chat.Chat)(nil)).
+			Model((*room.Room)(nil)).
 			ForeignKey(`(user_id) REFERENCES "user" (id) ON DELETE CASCADE`).
 			Exec(ctx)
 		if err != nil {
@@ -19,7 +19,7 @@ func init() {
 		return nil
 	}, func(ctx context.Context, db *bun.DB) error {
 		_, err := db.NewDropTable().
-			Model((*chat.Chat)(nil)).
+			Model((*room.Room)(nil)).
 			IfExists().
 			Exec(ctx)
 		if err != nil {
