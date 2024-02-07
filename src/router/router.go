@@ -14,7 +14,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func NewRouter(uc controller.IUserController, cc controller.IChatController, cnf config.Config) *echo.Echo {
+func NewRouter(uc controller.IUserController, cc controller.IChatController, rc controller.IRoomController, cnf config.Config) *echo.Echo {
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -33,6 +33,7 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, cnf
 		//CookieMaxAge:   60,
 	}))
 	e.Use(middleware.Logger())
+	// =============== user ===============
 	e.POST("/signup", uc.SignUp)
 	e.POST("/login", uc.LogIn)
 	e.POST("/logout", uc.LogOut)
@@ -47,6 +48,7 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, cnf
 	user.GET("/confirm", uc.SignUpCallback)
 	user.GET("/get_profile", uc.GetUser)
 	user.POST("/create_profile", uc.CreateProfile)
+	// =============== chat ===============
 	chat := e.Group("/chat")
 	chat.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey:  []byte(os.Getenv("SECRET")),
@@ -55,6 +57,13 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, cnf
 	chat.GET("/socket", cc.HandleWebSocket)
 	chat.GET("/get", cc.ListChat)
 	chat.PUT("/delete", cc.DeleteChat)
+	// =============== room ===============
+	room := e.Group("/room")
+	room.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	room.POST("/create", rc.CreateRoom)
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
 	return e
