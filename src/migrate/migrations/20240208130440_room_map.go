@@ -10,7 +10,9 @@ import (
 func init() {
 	Migrations.MustRegister(func(ctx context.Context, db *bun.DB) error {
 		_, err := db.NewCreateTable().
-			Model((*room.Room)(nil)).
+			Model((*room.RoomMap)(nil)).
+			ForeignKey(`(user_id) REFERENCES "user" (id) ON DELETE CASCADE`).
+			ForeignKey(`(room_id) REFERENCES "room" (id) ON DELETE CASCADE`).
 			Exec(ctx)
 		if err != nil {
 			return err
@@ -18,7 +20,7 @@ func init() {
 		return nil
 	}, func(ctx context.Context, db *bun.DB) error {
 		_, err := db.NewDropTable().
-			Model((*room.Room)(nil)).
+			Model((*room.RoomMap)(nil)).
 			IfExists().
 			Exec(ctx)
 		if err != nil {

@@ -18,7 +18,7 @@ type Chat struct {
 	ID        uint64    `json:"id" bun:"id,pk,autoincrement"`
 	Message   string    `json:"message" bun:"type:varchar(255),notnull"`
 	UserID    string    `json:"user_id" bun:"type:uuid,notnull"`
-	RoomID    uint64    `json:"room_id" bun:"type:uuid,notnull"`
+	RoomID    string    `json:"room_id" bun:"type:uuid,notnull"`
 	CreatedAt time.Time `json:"created_at" bun:"default:current_timestamp"`
 	UpdatedAt time.Time `json:"updated_at" bun:"default:current_timestamp"`
 	IsDeleted bool      `json:"is_deleted" bun:"default:false"`
