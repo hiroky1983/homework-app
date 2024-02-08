@@ -13,9 +13,9 @@ type IRoomController interface {
 }
 
 type roomController struct {
-	ru        usecase.IRoomUsecase
-	cnf       config.Config
-	db        *bun.DB
+	ru  usecase.IRoomUsecase
+	cnf config.Config
+	db  *bun.DB
 }
 
 func NewRoomController(ru usecase.IRoomUsecase, cnf config.Config, db *bun.DB) IRoomController {

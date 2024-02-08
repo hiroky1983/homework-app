@@ -8,7 +8,7 @@ import (
 )
 
 type IRoomUsecase interface {
-	Create(r room.Room, conf config.Config) (room.Room,  error)
+	Create(r room.Room, conf config.Config) (room.Room, error)
 }
 
 type roomUsecase struct {
