@@ -3,6 +3,7 @@ package usecase
 import (
 	"homework/config"
 	"homework/domain/model/room"
+	"homework/domain/repository"
 
 	"github.com/uptrace/bun"
 )
@@ -12,11 +13,12 @@ type IRoomUsecase interface {
 }
 
 type roomUsecase struct {
+	rr repository.IRoomRepository
 	db *bun.DB
 }
 
-func NewRoomUsecase(db *bun.DB) IRoomUsecase {
-	return &roomUsecase{db}
+func NewRoomUsecase(rr repository.IRoomRepository, db *bun.DB) IRoomUsecase {
+	return &roomUsecase{rr, db}
 }
 
 func (ru *roomUsecase) Create(r room.Room, cnf config.Config) (room.Room, error) {
@@ -24,10 +26,10 @@ func (ru *roomUsecase) Create(r room.Room, cnf config.Config) (room.Room, error)
 	if err != nil {
 		return room.Room{}, err
 	}
-	// if err := ru.ur.CreateRoom(tx, &r); err != nil {
-	// 	tx.Rollback()
-	// 	return room.Room{}, err
-	// }
+	if err := ru.rr.Create(tx, &r); err != nil {
+		tx.Rollback()
+		return room.Room{}, err
+	}
 	tx.Commit()
 	return r, nil
 }
