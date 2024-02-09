@@ -12,8 +12,18 @@ func NewRoom() *Room {
 	return &Room{}
 }
 
-func (rr *Room) Create(db repository.DBConn, r *room.Room) error {
-	_, err := db.NewInsert().Model(r).Exec(context.Background())
+func (rr *Room) Create(db repository.DBConn) error {
+	room := &room.Room{}
+	_, err := db.NewInsert().Model(room).Exec(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
+func (rr *Room) CreateMap(db repository.DBConn, roomMap room.RoomMap) error {
+	_, err := db.NewInsert().Model(&roomMap).Exec(context.Background())
 	if err != nil {
 		return err
 	}

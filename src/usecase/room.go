@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"homework/config"
 	"homework/domain/model/room"
 	"homework/domain/repository"
 
@@ -9,7 +8,7 @@ import (
 )
 
 type IRoomUsecase interface {
-	Create(r room.Room, conf config.Config) (room.Room, error)
+	Create(userID string) (error)
 }
 
 type roomUsecase struct {
@@ -21,15 +20,22 @@ func NewRoomUsecase(rr repository.IRoomRepository, db *bun.DB) IRoomUsecase {
 	return &roomUsecase{rr, db}
 }
 
-func (ru *roomUsecase) Create(r room.Room, cnf config.Config) (room.Room, error) {
+func (ru *roomUsecase) Create(userID string) (error) {
 	tx, err := ru.db.Begin()
 	if err != nil {
-		return room.Room{}, err
+		return  err
 	}
-	if err := ru.rr.Create(tx, &r); err != nil {
+	if err := ru.rr.Create(tx); err != nil {
 		tx.Rollback()
-		return room.Room{}, err
+		return err
+	}
+	roomMap := room.RoomMap{
+		UserID: userID,
+	}
+	if err := ru.rr.CreateMap(tx, roomMap); err != nil {
+		tx.Rollback()
+		return err
 	}
 	tx.Commit()
-	return r, nil
+	return nil
 }
