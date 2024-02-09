@@ -21,7 +21,6 @@ func (rr *Room) Create(db repository.DBConn) error {
 	return nil
 }
 
-
 func (rr *Room) CreateMap(db repository.DBConn, roomMap room.RoomMap) error {
 	_, err := db.NewInsert().Model(&roomMap).Exec(context.Background())
 	if err != nil {

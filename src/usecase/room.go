@@ -8,7 +8,7 @@ import (
 )
 
 type IRoomUsecase interface {
-	Create(userID string) (error)
+	Create(userID string) error
 }
 
 type roomUsecase struct {
@@ -20,10 +20,10 @@ func NewRoomUsecase(rr repository.IRoomRepository, db *bun.DB) IRoomUsecase {
 	return &roomUsecase{rr, db}
 }
 
-func (ru *roomUsecase) Create(userID string) (error) {
+func (ru *roomUsecase) Create(userID string) error {
 	tx, err := ru.db.Begin()
 	if err != nil {
-		return  err
+		return err
 	}
 	if err := ru.rr.Create(tx); err != nil {
 		tx.Rollback()
