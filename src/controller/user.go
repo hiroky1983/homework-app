@@ -30,6 +30,7 @@ type IUserController interface {
 	GoogleAuthCallback(c echo.Context) error
 	CreateProfile(c echo.Context) error
 	SignUpCallback(c echo.Context) error
+	ListUser(c echo.Context) error
 }
 
 type userController struct {
@@ -177,4 +178,18 @@ func (uc *userController) SignUpCallback(c echo.Context) error {
 	}
 
 	return c.Redirect(http.StatusFound, "http://localhost:3000/profile")
+}
+
+func (uc *userController) ListUser(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims, ok := user.Claims.(jwt.MapClaims)
+	if !ok || !user.Valid {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(fmt.Errorf("invalid token"), http.StatusInternalServerError))
+	}
+	userID := claims["user_id"]
+	users, err := uc.uu.List(userID.(string))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
+	return c.JSON(http.StatusOK, users)
 }
