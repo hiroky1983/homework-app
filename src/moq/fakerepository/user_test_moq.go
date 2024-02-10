@@ -31,6 +31,9 @@ var _ repository.IUserRepository = &IUserRepositoryMock{}
 //			GetUserByIDFunc: func(db repository.DBConn, userMoqParam *user.User, userID string) error {
 //				panic("mock out the GetUserByID method")
 //			},
+//			ListUserFunc: func(db repository.DBConn, u *[]user.User, userID string) error {
+//				panic("mock out the ListUser method")
+//			},
 //			UpdateIsVerifiedUserFunc: func(db repository.DBConn, userID string) error {
 //				panic("mock out the UpdateIsVerifiedUser method")
 //			},
@@ -55,6 +58,9 @@ type IUserRepositoryMock struct {
 
 	// GetUserByIDFunc mocks the GetUserByID method.
 	GetUserByIDFunc func(db repository.DBConn, userMoqParam *user.User, userID string) error
+
+	// ListUserFunc mocks the ListUser method.
+	ListUserFunc func(db repository.DBConn, u *[]user.User, userID string) error
 
 	// UpdateIsVerifiedUserFunc mocks the UpdateIsVerifiedUser method.
 	UpdateIsVerifiedUserFunc func(db repository.DBConn, userID string) error
@@ -98,6 +104,15 @@ type IUserRepositoryMock struct {
 			// UserID is the userID argument value.
 			UserID string
 		}
+		// ListUser holds details about calls to the ListUser method.
+		ListUser []struct {
+			// Db is the db argument value.
+			Db repository.DBConn
+			// U is the u argument value.
+			U *[]user.User
+			// UserID is the userID argument value.
+			UserID string
+		}
 		// UpdateIsVerifiedUser holds details about calls to the UpdateIsVerifiedUser method.
 		UpdateIsVerifiedUser []struct {
 			// Db is the db argument value.
@@ -117,6 +132,7 @@ type IUserRepositoryMock struct {
 	lockGetProfile           sync.RWMutex
 	lockGetUserByEmail       sync.RWMutex
 	lockGetUserByID          sync.RWMutex
+	lockListUser             sync.RWMutex
 	lockUpdateIsVerifiedUser sync.RWMutex
 	lockUpdateUser           sync.RWMutex
 }
@@ -274,6 +290,46 @@ func (mock *IUserRepositoryMock) GetUserByIDCalls() []struct {
 	mock.lockGetUserByID.RLock()
 	calls = mock.calls.GetUserByID
 	mock.lockGetUserByID.RUnlock()
+	return calls
+}
+
+// ListUser calls ListUserFunc.
+func (mock *IUserRepositoryMock) ListUser(db repository.DBConn, u *[]user.User, userID string) error {
+	if mock.ListUserFunc == nil {
+		panic("IUserRepositoryMock.ListUserFunc: method is nil but IUserRepository.ListUser was just called")
+	}
+	callInfo := struct {
+		Db     repository.DBConn
+		U      *[]user.User
+		UserID string
+	}{
+		Db:     db,
+		U:      u,
+		UserID: userID,
+	}
+	mock.lockListUser.Lock()
+	mock.calls.ListUser = append(mock.calls.ListUser, callInfo)
+	mock.lockListUser.Unlock()
+	return mock.ListUserFunc(db, u, userID)
+}
+
+// ListUserCalls gets all the calls that were made to ListUser.
+// Check the length with:
+//
+//	len(mockedIUserRepository.ListUserCalls())
+func (mock *IUserRepositoryMock) ListUserCalls() []struct {
+	Db     repository.DBConn
+	U      *[]user.User
+	UserID string
+} {
+	var calls []struct {
+		Db     repository.DBConn
+		U      *[]user.User
+		UserID string
+	}
+	mock.lockListUser.RLock()
+	calls = mock.calls.ListUser
+	mock.lockListUser.RUnlock()
 	return calls
 }
 
