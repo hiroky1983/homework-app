@@ -25,12 +25,14 @@ func (ru *roomUsecase) Create(userID string) error {
 	if err != nil {
 		return err
 	}
-	if err := ru.rr.Create(tx); err != nil {
+	ID, err := ru.rr.Create(tx)
+	if err != nil {
 		tx.Rollback()
 		return err
 	}
 	roomMap := room.RoomMap{
 		UserID: userID,
+		RoomID: ID,
 	}
 	if err := ru.rr.CreateMap(tx, roomMap); err != nil {
 		tx.Rollback()
