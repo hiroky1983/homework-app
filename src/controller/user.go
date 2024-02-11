@@ -13,7 +13,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/uptrace/bun"
 	"golang.org/x/oauth2"
@@ -132,6 +131,7 @@ func (uc *userController) GetUser(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
+
 	u, err := uc.uu.Get(userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
@@ -141,16 +141,21 @@ func (uc *userController) GetUser(c echo.Context) error {
 }
 
 func (uc *userController) CreateProfile(c echo.Context) error {
-	u := c.Get("user").(*jwt.Token)
-	claims := u.Claims.(jwt.MapClaims)
-	userID := claims["user_id"]
+	userID, err := token.GetUserIDWithTokenCheck(c)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
+
 	us := user.UserProfileRequest{}
 	if err := c.Bind(&us); err != nil {
 		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
 	}
-	user := user.User{}
-	user.ID = userID.(string)
-	user.UserName = us.UserName
+
+	user := user.User{
+		ID:       userID,
+		UserName: us.UserName,
+	}
+
 	if err := uc.uu.CreateProfile(user); err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
@@ -170,6 +175,7 @@ func (uc *userController) SignUpCallback(c echo.Context) error {
 			return c.Redirect(http.StatusFound, "http://localhost:3000/expire")
 		}
 	}
+
 	if err := token.QueryTokenCheck(c); err != nil {
 		return c.Redirect(http.StatusFound, "http://localhost:3000/expire")
 	}
@@ -186,6 +192,7 @@ func (uc *userController) ListUser(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
+
 	users, err := uc.uu.List(userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
