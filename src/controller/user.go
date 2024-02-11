@@ -8,6 +8,7 @@ import (
 	"homework/domain/repository"
 	apperror "homework/error"
 	"homework/middleware/cookie"
+	"homework/middleware/token"
 	"homework/usecase"
 	"net/http"
 	"time"
@@ -127,10 +128,11 @@ func (uc *userController) GoogleAuthCallback(c echo.Context) error {
 }
 
 func (uc *userController) GetUser(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userID := claims["user_id"]
-	u, err := uc.uu.Get(userID.(string))
+	userID ,err := token.GetUserIDWithTokenCheck(c)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
+	u, err := uc.uu.Get(userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
@@ -159,21 +161,20 @@ func (uc *userController) CreateProfile(c echo.Context) error {
 }
 
 func (uc *userController) SignUpCallback(c echo.Context) error {
-	t := c.QueryParam("token")
-	u := c.Get("user").(*jwt.Token)
-	claims, ok := u.Claims.(jwt.MapClaims)
-	if !ok || !u.Valid {
-		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(fmt.Errorf("invalid token"), http.StatusInternalServerError))
+	userID ,err := token.GetUserIDWithTokenCheck(c)
+	if err != nil {
+		switch err.Error() {
+		case "invalid token":
+			return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
+			case "token is expired":
+				return c.Redirect(http.StatusFound, "http://localhost:3000/expire")
+		}
 	}
-	exp := claims.VerifyExpiresAt(time.Now().Unix(), true)
-	if u.Raw != t || !exp {
+	if err := token.QueryTokenCheck(c); err != nil {
 		return c.Redirect(http.StatusFound, "http://localhost:3000/expire")
 	}
-	userID := claims["user_id"]
-	user := user.User{}
-	user.ID = userID.(string)
 
-	if err := uc.ur.UpdateIsVerifiedUser(uc.db, user.ID); err != nil {
+	if err := uc.ur.UpdateIsVerifiedUser(uc.db, userID); err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
 
@@ -181,13 +182,11 @@ func (uc *userController) SignUpCallback(c echo.Context) error {
 }
 
 func (uc *userController) ListUser(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims, ok := user.Claims.(jwt.MapClaims)
-	if !ok || !user.Valid {
-		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(fmt.Errorf("invalid token"), http.StatusInternalServerError))
+	userID ,err := token.GetUserIDWithTokenCheck(c)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
-	userID := claims["user_id"]
-	users, err := uc.uu.List(userID.(string))
+	users, err := uc.uu.List(userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}

@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"homework/config"
 	"homework/domain/model/chat"
+	apperror "homework/error"
+	"homework/middleware/token"
 	"homework/usecase"
 	"log"
-
-	"github.com/golang-jwt/jwt/v4"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/websocket"
@@ -37,9 +38,10 @@ func NewChatController(uu usecase.IChatUsecase, cnf config.Config, oauthConf *oa
 
 func (cc *chatController) HandleWebSocket(c echo.Context) error {
 	log.Println("Serving at web socket...")
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userID := claims["user_id"]
+	userID ,err := token.GetUserIDWithTokenCheck(c)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
+	}
 	// ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 	// if err != nil {
 	// 	fmt.Printf("Failed to set websocket upgrade: %+v\n", err)
@@ -94,7 +96,7 @@ func (cc *chatController) HandleWebSocket(c echo.Context) error {
 
 			req := chat.Chat{
 				Message: msg,
-				UserID:  userID.(string),
+				UserID:  userID,
 			}
 
 			res, err := cc.cu.Create(req)
@@ -122,11 +124,12 @@ func (cc *chatController) HandleWebSocket(c echo.Context) error {
 }
 
 func (cc *chatController) ListChat(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userID := claims["user_id"]
+	userID ,err := token.GetUserIDWithTokenCheck(c)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
+	}
 
-	res, err := cc.cu.List(userID.(string))
+	res, err := cc.cu.List(userID)
 	if err != nil {
 		return c.JSON(500, err)
 	}
