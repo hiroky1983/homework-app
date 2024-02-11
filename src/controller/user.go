@@ -128,7 +128,7 @@ func (uc *userController) GoogleAuthCallback(c echo.Context) error {
 }
 
 func (uc *userController) GetUser(c echo.Context) error {
-	userID ,err := token.GetUserIDWithTokenCheck(c)
+	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
@@ -161,13 +161,13 @@ func (uc *userController) CreateProfile(c echo.Context) error {
 }
 
 func (uc *userController) SignUpCallback(c echo.Context) error {
-	userID ,err := token.GetUserIDWithTokenCheck(c)
+	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
 		switch err.Error() {
 		case "invalid token":
 			return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
-			case "token is expired":
-				return c.Redirect(http.StatusFound, "http://localhost:3000/expire")
+		case "token is expired":
+			return c.Redirect(http.StatusFound, "http://localhost:3000/expire")
 		}
 	}
 	if err := token.QueryTokenCheck(c); err != nil {
@@ -182,7 +182,7 @@ func (uc *userController) SignUpCallback(c echo.Context) error {
 }
 
 func (uc *userController) ListUser(c echo.Context) error {
-	userID ,err := token.GetUserIDWithTokenCheck(c)
+	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}

@@ -38,7 +38,7 @@ func NewChatController(uu usecase.IChatUsecase, cnf config.Config, oauthConf *oa
 
 func (cc *chatController) HandleWebSocket(c echo.Context) error {
 	log.Println("Serving at web socket...")
-	userID ,err := token.GetUserIDWithTokenCheck(c)
+	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
 	}
@@ -124,7 +124,7 @@ func (cc *chatController) HandleWebSocket(c echo.Context) error {
 }
 
 func (cc *chatController) ListChat(c echo.Context) error {
-	userID ,err := token.GetUserIDWithTokenCheck(c)
+	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
 	}

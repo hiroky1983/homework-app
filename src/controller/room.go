@@ -26,12 +26,12 @@ func NewRoomController(ru usecase.IRoomUsecase, cnf config.Config, db *bun.DB) I
 }
 
 func (rc *roomController) CreateRoom(c echo.Context) error {
-	userID ,err := token.GetUserIDWithTokenCheck(c)
+	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
 	}
 
-	if err := rc.ru.Create(userID);err != nil {
+	if err := rc.ru.Create(userID); err != nil {
 		return c.JSON(500, err)
 	}
 	return c.JSON(201, nil)

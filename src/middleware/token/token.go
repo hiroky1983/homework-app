@@ -14,6 +14,7 @@ func GetUserIDWithTokenCheck(c echo.Context) (string, error) {
 	if !ok || !u.Valid {
 		return "", fmt.Errorf("invalid token")
 	}
+
 	exp := claims.VerifyExpiresAt(time.Now().Unix(), true)
 	if !exp {
 		return "", fmt.Errorf("token is expired")
