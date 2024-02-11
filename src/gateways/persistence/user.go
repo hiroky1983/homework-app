@@ -61,7 +61,7 @@ func (ur *User) GetProfile(db repository.DBConn, u *user.User, userID string) er
 	return nil
 }
 
-func (ur *User) ListUser(db repository.DBConn, u *[]user.User, userID string) error {
+func (ur *User) ListUser(db repository.DBConn, u *user.Users, userID string) error {
 	if err := db.NewSelect().Model(u).Where("id!=?", userID).Scan(context.Background()); err != nil {
 		return err
 	}

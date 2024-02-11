@@ -39,6 +39,14 @@ type UserProfileRequest struct {
 	UserName string `json:"userName"`
 }
 
+type UserListResponse struct {
+	ID       string `json:"id"`
+	UserName string `json:"userName"`
+	Email    string `json:"email"`
+}
+
+type Users []User
+
 func (u *User) Validate() error {
 	return validation.ValidateStruct(u,
 		validation.Field(
@@ -65,4 +73,16 @@ func (u *User) GenerateToken(cnf config.Config) (string, error) {
 		return "", err
 	}
 	return tokenString, nil
+}
+
+func (u *Users) NewUserListResponse() []UserListResponse {
+	var res []UserListResponse
+	for _, user := range *u {
+		res = append(res, UserListResponse{
+			ID:       user.ID,
+			UserName: user.UserName,
+			Email:    user.Email,
+		})
+	}
+	return res
 }

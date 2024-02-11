@@ -17,7 +17,7 @@ type IUserUsecase interface {
 	LoginWithGoogle(user userModel.User, cnf config.Config) (string, error)
 	CreateProfile(user userModel.User) error
 	Get(userID string) (userModel.User, error)
-	List(userID string) ([]userModel.User, error)
+	List(userID string) ([]userModel.UserListResponse, error)
 }
 
 type userUsecase struct {
@@ -141,10 +141,12 @@ func (uu *userUsecase) Get(userID string) (userModel.User, error) {
 	return user, nil
 }
 
-func (uu *userUsecase) List(userID string) ([]userModel.User, error) {
-	users := []userModel.User{}
+func (uu *userUsecase) List(userID string) ([]userModel.UserListResponse, error) {
+	users := userModel.Users{}
 	if err := uu.ur.ListUser(uu.db, &users, userID); err != nil {
 		return nil, err
 	}
-	return users, nil
+	res := users.NewUserListResponse()
+
+	return res, nil
 }
