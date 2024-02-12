@@ -28,3 +28,10 @@ func (rr *Room) CreateMap(db repository.DBConn, roomMap room.RoomMap) error {
 	}
 	return nil
 }
+
+func (rr *Room) GetRoomByUserID(db repository.DBConn, roomMap *room.RoomMap, userID string) error {
+	if err := db.NewSelect().Model((roomMap)).Where("user_id=?", userID).Scan(context.Background()); err != nil {
+		return err
+	}
+	return nil
+}

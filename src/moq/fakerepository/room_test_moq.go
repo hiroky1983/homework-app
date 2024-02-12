@@ -25,6 +25,9 @@ var _ repository.IRoomRepository = &IRoomRepositoryMock{}
 //			CreateMapFunc: func(db repository.DBConn, roomMap room.RoomMap) error {
 //				panic("mock out the CreateMap method")
 //			},
+//			GetRoomByUserIDFunc: func(db repository.DBConn, roomMap *room.RoomMap, userID string) error {
+//				panic("mock out the GetRoomByUserID method")
+//			},
 //		}
 //
 //		// use mockedIRoomRepository in code that requires repository.IRoomRepository
@@ -37,6 +40,9 @@ type IRoomRepositoryMock struct {
 
 	// CreateMapFunc mocks the CreateMap method.
 	CreateMapFunc func(db repository.DBConn, roomMap room.RoomMap) error
+
+	// GetRoomByUserIDFunc mocks the GetRoomByUserID method.
+	GetRoomByUserIDFunc func(db repository.DBConn, roomMap *room.RoomMap, userID string) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -52,9 +58,19 @@ type IRoomRepositoryMock struct {
 			// RoomMap is the roomMap argument value.
 			RoomMap room.RoomMap
 		}
+		// GetRoomByUserID holds details about calls to the GetRoomByUserID method.
+		GetRoomByUserID []struct {
+			// Db is the db argument value.
+			Db repository.DBConn
+			// RoomMap is the roomMap argument value.
+			RoomMap *room.RoomMap
+			// UserID is the userID argument value.
+			UserID string
+		}
 	}
-	lockCreate    sync.RWMutex
-	lockCreateMap sync.RWMutex
+	lockCreate          sync.RWMutex
+	lockCreateMap       sync.RWMutex
+	lockGetRoomByUserID sync.RWMutex
 }
 
 // Create calls CreateFunc.
@@ -122,5 +138,45 @@ func (mock *IRoomRepositoryMock) CreateMapCalls() []struct {
 	mock.lockCreateMap.RLock()
 	calls = mock.calls.CreateMap
 	mock.lockCreateMap.RUnlock()
+	return calls
+}
+
+// GetRoomByUserID calls GetRoomByUserIDFunc.
+func (mock *IRoomRepositoryMock) GetRoomByUserID(db repository.DBConn, roomMap *room.RoomMap, userID string) error {
+	if mock.GetRoomByUserIDFunc == nil {
+		panic("IRoomRepositoryMock.GetRoomByUserIDFunc: method is nil but IRoomRepository.GetRoomByUserID was just called")
+	}
+	callInfo := struct {
+		Db      repository.DBConn
+		RoomMap *room.RoomMap
+		UserID  string
+	}{
+		Db:      db,
+		RoomMap: roomMap,
+		UserID:  userID,
+	}
+	mock.lockGetRoomByUserID.Lock()
+	mock.calls.GetRoomByUserID = append(mock.calls.GetRoomByUserID, callInfo)
+	mock.lockGetRoomByUserID.Unlock()
+	return mock.GetRoomByUserIDFunc(db, roomMap, userID)
+}
+
+// GetRoomByUserIDCalls gets all the calls that were made to GetRoomByUserID.
+// Check the length with:
+//
+//	len(mockedIRoomRepository.GetRoomByUserIDCalls())
+func (mock *IRoomRepositoryMock) GetRoomByUserIDCalls() []struct {
+	Db      repository.DBConn
+	RoomMap *room.RoomMap
+	UserID  string
+} {
+	var calls []struct {
+		Db      repository.DBConn
+		RoomMap *room.RoomMap
+		UserID  string
+	}
+	mock.lockGetRoomByUserID.RLock()
+	calls = mock.calls.GetRoomByUserID
+	mock.lockGetRoomByUserID.RUnlock()
 	return calls
 }

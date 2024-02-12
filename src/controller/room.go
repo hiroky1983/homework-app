@@ -2,6 +2,7 @@ package controller
 
 import (
 	"homework/config"
+	"homework/domain/model/room"
 	apperror "homework/error"
 	"homework/middleware/token"
 	"homework/usecase"
@@ -30,9 +31,14 @@ func (rc *roomController) CreateRoom(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
 	}
+	otherUser := room.RoomMap{}
+	if err := c.Bind(&otherUser); err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
 
-	if err := rc.ru.Create(userID); err != nil {
+	RoomID, err := rc.ru.Create(userID, otherUser)
+	if err != nil {
 		return c.JSON(500, err)
 	}
-	return c.JSON(201, nil)
+	return c.JSON(200, RoomID)
 }

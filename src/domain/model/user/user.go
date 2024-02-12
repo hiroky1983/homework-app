@@ -43,7 +43,7 @@ type UserListResponse struct {
 	ID       string `json:"id"`
 	UserName string `json:"userName"`
 	Email    string `json:"email"`
-	RoomID   string `json:"RoomID"`
+	RoomID   string `json:"roomId"`
 }
 
 type Users []UserListResponse
@@ -83,6 +83,7 @@ func (u *Users) NewUserListResponse() []UserListResponse {
 			ID:       user.ID,
 			UserName: user.UserName,
 			Email:    user.Email,
+			RoomID:   user.RoomID,
 		})
 	}
 	return res
