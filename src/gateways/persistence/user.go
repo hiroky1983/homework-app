@@ -61,9 +61,16 @@ func (ur *User) GetProfile(db repository.DBConn, u *user.User, userID string) er
 	return nil
 }
 
-func (ur *User) ListUser(db repository.DBConn, u *user.Users, userID string) error {
-	if err := db.NewSelect().Model(u).Where("id!=?", userID).Scan(context.Background()); err != nil {
-		return err
+func (ur *User) ListUser(db repository.DBConn, userID string) (user.Users, error) {
+	u := &user.User{}
+	var users user.Users
+	if err := db.NewSelect().Model(u).
+		Column("u.id", "u.user_name", "u.email").
+		ColumnExpr("rm.room_id AS room_id").
+		Join("LEFT JOIN room_map AS rm ON u.id = rm.user_id").
+		Where("u.id != ?", userID).
+		Scan(context.Background(), &users); err != nil {
+		return nil, err
 	}
-	return nil
+	return users, nil
 }

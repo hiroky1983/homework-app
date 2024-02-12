@@ -43,9 +43,10 @@ type UserListResponse struct {
 	ID       string `json:"id"`
 	UserName string `json:"userName"`
 	Email    string `json:"email"`
+	RoomID   string `json:"RoomID"`
 }
 
-type Users []User
+type Users []UserListResponse
 
 func (u *User) Validate() error {
 	return validation.ValidateStruct(u,
