@@ -8,7 +8,7 @@ import (
 )
 
 type IRoomUsecase interface {
-	Create(userID string) error
+	Create(userID string, otherUser room.RoomMap) (string,error)
 }
 
 type roomUsecase struct {
@@ -20,24 +20,34 @@ func NewRoomUsecase(rr repository.IRoomRepository, db *bun.DB) IRoomUsecase {
 	return &roomUsecase{rr, db}
 }
 
-func (ru *roomUsecase) Create(userID string) error {
+func (ru *roomUsecase) Create(userID string, otherUser room.RoomMap) (string,error) {
 	tx, err := ru.db.Begin()
 	if err != nil {
-		return err
+		return "",err
 	}
-	ID, err := ru.rr.Create(tx)
+	RoomID, err := ru.rr.Create(tx)
 	if err != nil {
 		tx.Rollback()
-		return err
+		return "",err
 	}
 	roomMapMe := room.RoomMap{
 		UserID: userID,
-		RoomID: ID,
+		RoomID: RoomID,
+	}
+
+	roomMapOther := room.RoomMap{
+		UserID: otherUser.UserID,
+		RoomID: RoomID,
 	}
 	if err := ru.rr.CreateMap(tx, roomMapMe); err != nil {
 		tx.Rollback()
-		return err
+		return "", err
+	}
+
+	if err := ru.rr.CreateMap(tx, roomMapOther); err != nil {
+		tx.Rollback()
+		return "",err
 	}
 	tx.Commit()
-	return nil
+	return RoomID, nil
 }
