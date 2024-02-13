@@ -40,5 +40,5 @@ func (rc *roomController) CreateRoom(c echo.Context) error {
 	if err != nil {
 		return c.JSON(500, err)
 	}
-	return c.JSON(200, RoomID)
+	return c.JSON(200, map[string]string{"roomId": RoomID})
 }
