@@ -26,7 +26,7 @@ type userUsecase struct {
 	db *bun.DB
 }
 
-func NewUserUsecase(ur repository.IUserRepository, mr repository.Mail,db *bun.DB) IUserUsecase {
+func NewUserUsecase(ur repository.IUserRepository, mr repository.Mail, db *bun.DB) IUserUsecase {
 	return &userUsecase{ur, mr, db}
 }
 
