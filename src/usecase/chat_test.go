@@ -180,6 +180,7 @@ func Test_chatUsecase_List(t *testing.T) {
 	}
 	type args struct {
 		userID string
+		roomID string
 	}
 	tests := []struct {
 		name    string
@@ -192,7 +193,7 @@ func Test_chatUsecase_List(t *testing.T) {
 			name: "success",
 			fields: fields{
 				ur: &fakerepository.IChatRepositoryMock{
-					ListChatByUserIDFunc: func(db repository.DBConn, chatList *chatModel.ChatList) error {
+					ListChatByUserIDFunc: func(db repository.DBConn, chatList *chatModel.ChatList, roomID string) error {
 						*chatList = append(*chatList, chatModel.Chat{
 							ID:        1,
 							UserID:    id,
@@ -223,7 +224,7 @@ func Test_chatUsecase_List(t *testing.T) {
 				ur: tt.fields.ur,
 				db: tt.fields.db,
 			}
-			got, err := cu.List(tt.args.userID)
+			got, err := cu.List(tt.args.userID, tt.args.roomID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("chatUsecase.List() error = %v, wantErr %v", err, tt.wantErr)
 				return

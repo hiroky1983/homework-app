@@ -25,7 +25,7 @@ var _ repository.IChatRepository = &IChatRepositoryMock{}
 //			DeleteFunc: func(db repository.DBConn, chatID uint64) error {
 //				panic("mock out the Delete method")
 //			},
-//			ListChatByUserIDFunc: func(db repository.DBConn, chatList *chat.ChatList) error {
+//			ListChatByUserIDFunc: func(db repository.DBConn, chatList *chat.ChatList, roomID string) error {
 //				panic("mock out the ListChatByUserID method")
 //			},
 //		}
@@ -42,7 +42,7 @@ type IChatRepositoryMock struct {
 	DeleteFunc func(db repository.DBConn, chatID uint64) error
 
 	// ListChatByUserIDFunc mocks the ListChatByUserID method.
-	ListChatByUserIDFunc func(db repository.DBConn, chatList *chat.ChatList) error
+	ListChatByUserIDFunc func(db repository.DBConn, chatList *chat.ChatList, roomID string) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -66,6 +66,8 @@ type IChatRepositoryMock struct {
 			Db repository.DBConn
 			// ChatList is the chatList argument value.
 			ChatList *chat.ChatList
+			// RoomID is the roomID argument value.
+			RoomID string
 		}
 	}
 	lockCreate           sync.RWMutex
@@ -146,21 +148,23 @@ func (mock *IChatRepositoryMock) DeleteCalls() []struct {
 }
 
 // ListChatByUserID calls ListChatByUserIDFunc.
-func (mock *IChatRepositoryMock) ListChatByUserID(db repository.DBConn, chatList *chat.ChatList) error {
+func (mock *IChatRepositoryMock) ListChatByUserID(db repository.DBConn, chatList *chat.ChatList, roomID string) error {
 	if mock.ListChatByUserIDFunc == nil {
 		panic("IChatRepositoryMock.ListChatByUserIDFunc: method is nil but IChatRepository.ListChatByUserID was just called")
 	}
 	callInfo := struct {
 		Db       repository.DBConn
 		ChatList *chat.ChatList
+		RoomID   string
 	}{
 		Db:       db,
 		ChatList: chatList,
+		RoomID:   roomID,
 	}
 	mock.lockListChatByUserID.Lock()
 	mock.calls.ListChatByUserID = append(mock.calls.ListChatByUserID, callInfo)
 	mock.lockListChatByUserID.Unlock()
-	return mock.ListChatByUserIDFunc(db, chatList)
+	return mock.ListChatByUserIDFunc(db, chatList, roomID)
 }
 
 // ListChatByUserIDCalls gets all the calls that were made to ListChatByUserID.
@@ -170,10 +174,12 @@ func (mock *IChatRepositoryMock) ListChatByUserID(db repository.DBConn, chatList
 func (mock *IChatRepositoryMock) ListChatByUserIDCalls() []struct {
 	Db       repository.DBConn
 	ChatList *chat.ChatList
+	RoomID   string
 } {
 	var calls []struct {
 		Db       repository.DBConn
 		ChatList *chat.ChatList
+		RoomID   string
 	}
 	mock.lockListChatByUserID.RLock()
 	calls = mock.calls.ListChatByUserID
