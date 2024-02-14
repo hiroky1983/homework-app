@@ -94,8 +94,15 @@ func (cc *chatController) HandleWebSocket(c echo.Context) error {
 				break // エラー発生時にループを終了
 			}
 
+			// string to json
+			var chatreq chat.ChatRequest
+			if err := json.Unmarshal([]byte(msg), &chatreq); err != nil {
+				fmt.Println(err)
+				c.Logger().Error(err)
+			}
 			req := chat.Chat{
-				Message: msg,
+				Message: chatreq.Message,
+				RoomID:  chatreq.RoomID,
 				UserID:  userID,
 			}
 
@@ -129,7 +136,9 @@ func (cc *chatController) ListChat(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
 	}
 
-	res, err := cc.cu.List(userID)
+	roomID := c.Param("room_id")
+
+	res, err := cc.cu.List(userID, roomID)
 	if err != nil {
 		return c.JSON(500, err)
 	}
@@ -142,7 +151,7 @@ func (cc *chatController) DeleteChat(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(500, err)
 	}
-	fmt.Println(req)
+
 	if err := cc.cu.Delete(req.ID); err != nil {
 		return c.JSON(500, err)
 	}

@@ -9,7 +9,7 @@ import (
 
 type IChatUsecase interface {
 	Create(chat chatModel.Chat) (chatModel.ChatResponse, error)
-	List(userID string) ([]chatModel.ChatResponse, error)
+	List(userID string, roomID string) ([]chatModel.ChatResponse, error)
 	Delete(chatID uint64) error
 }
 
@@ -35,9 +35,9 @@ func (cu *chatUsecase) Create(c chatModel.Chat) (chatModel.ChatResponse, error) 
 	return res, nil
 }
 
-func (cu *chatUsecase) List(userID string) ([]chatModel.ChatResponse, error) {
+func (cu *chatUsecase) List(userID string, roomID string) ([]chatModel.ChatResponse, error) {
 	chatList := chatModel.ChatList{}
-	if err := cu.ur.ListChatByUserID(cu.db, &chatList); err != nil {
+	if err := cu.ur.ListChatByUserID(cu.db, &chatList, roomID); err != nil {
 		return []chatModel.ChatResponse{}, err
 	}
 	res := chatList.NewChatResponse(userID)

@@ -56,7 +56,7 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, rc 
 		TokenLookup: "cookie:token",
 	}))
 	chat.GET("/socket", cc.HandleWebSocket)
-	chat.GET("/get", cc.ListChat)
+	chat.GET("/get/:room_id", cc.ListChat)
 	chat.PUT("/delete", cc.DeleteChat)
 	// =============== room ===============
 	room := e.Group("/room")

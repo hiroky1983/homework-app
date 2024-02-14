@@ -21,8 +21,8 @@ func (cr *Chat) Create(db repository.DBConn, chat *chat.Chat) error {
 	return nil
 }
 
-func (cr *Chat) ListChatByUserID(db repository.DBConn, chatList *chat.ChatList) error {
-	if err := db.NewSelect().Model((chatList)).Where("is_deleted = false").Scan(context.Background(), chatList); err != nil {
+func (cr *Chat) ListChatByUserID(db repository.DBConn, chatList *chat.ChatList, roomID string) error {
+	if err := db.NewSelect().Model((chatList)).Where("room_id = ?", roomID).Where("is_deleted = false").Scan(context.Background(), chatList); err != nil {
 		return err
 	}
 	return nil

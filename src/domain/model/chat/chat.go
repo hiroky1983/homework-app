@@ -28,6 +28,11 @@ type DeleteChatRequest struct {
 	ID uint64 `json:"id"`
 }
 
+type ChatRequest struct {
+	Message string `json:"message"`
+	RoomID  string `json:"roomId"`
+}
+
 type ChatResponse struct {
 	ID        uint64    `json:"id" bun:"primary_key"`
 	Message   string    `json:"message"`
