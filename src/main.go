@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"homework/config"
 	"homework/controller"
@@ -9,10 +10,14 @@ import (
 	"homework/gateways/persistence"
 	"homework/router"
 	"homework/usecase"
+	"homework/websocket"
 )
 
 func main() {
 	ctx := context.Background()
+	flag.Parse()
+	hub := websocket.NewHub()
+	go hub.Run()
 	cfg, err := config.NewConfig(ctx)
 	if err != nil {
 		fmt.Println(err)
