@@ -16,7 +16,7 @@ type IUserUsecase interface {
 	Login(user userModel.User, conf config.Config) (string, error)
 	LoginWithGoogle(user userModel.User, cnf config.Config) (string, error)
 	CreateProfile(user userModel.User) error
-	Get(userID string) (userModel.User, error)
+	GetProfile(userID string) (userModel.UserProfileResponse, error)
 	List(userID string) (userModel.Users, error)
 }
 
@@ -31,7 +31,7 @@ func NewUserUsecase(ur repository.IUserRepository, mr repository.Mail, db *bun.D
 }
 
 func (uu *userUsecase) SignUp(user userModel.User, cnf config.Config) (userModel.UserResponse, string, error) {
-	if err := user.Validate(); err != nil {
+	if err := user.ValidateUser(); err != nil {
 		return userModel.UserResponse{}, "", err
 	}
 	storedUser := userModel.User{}
@@ -80,7 +80,7 @@ func (uu *userUsecase) SignUp(user userModel.User, cnf config.Config) (userModel
 }
 
 func (uu *userUsecase) Login(user userModel.User, cnf config.Config) (string, error) {
-	if err := user.Validate(); err != nil {
+	if err := user.ValidateUser(); err != nil {
 		return "", err
 	}
 	storedUser := userModel.User{}
@@ -132,13 +132,15 @@ func (uu *userUsecase) CreateProfile(user userModel.User) error {
 	return nil
 }
 
-func (uu *userUsecase) Get(userID string) (userModel.User, error) {
+func (uu *userUsecase) GetProfile(userID string) (userModel.UserProfileResponse, error) {
 	user := userModel.User{}
 	if err := uu.ur.GetProfile(uu.db, &user, userID); err != nil {
-		return userModel.User{}, err
+		return userModel.UserProfileResponse{}, err
 	}
 
-	return user, nil
+	u := user.NewUserProfileResponse()
+
+	return u, nil
 }
 
 func (uu *userUsecase) List(userID string) (userModel.Users, error) {

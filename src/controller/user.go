@@ -132,7 +132,7 @@ func (uc *userController) GetUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
 
-	u, err := uc.uu.Get(userID)
+	u, err := uc.uu.GetProfile(userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}

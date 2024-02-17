@@ -18,8 +18,9 @@ type User struct {
 	Email      string    `json:"email" bun:"type:varchar(255)"`
 	Password   string    `json:"password" bun:"type:varchar(255)"`
 	ImagePath  string    `json:"image_path" bun:"type:varchar(255)"`
-	IsVerified bool      `json:"Is_verified" bun:"default:false"`
+	IsVerified bool      `json:"is_verified" bun:"default:false"`
 	GoogleID   string    `json:"google_id" bun:"type:varchar(255)"`
+	Profile    string    `json:"profile" bun:"type:varchar(255)"`
 	CreatedAt  time.Time `json:"created_at" bun:"default:current_timestamp"`
 	UpdatedAt  time.Time `json:"updated_at" bun:"default:current_timestamp"`
 	IsDeleted  bool      `json:"is_deleted" bun:"default:false"`
@@ -39,6 +40,14 @@ type UserProfileRequest struct {
 	UserName string `json:"userName"`
 }
 
+type UserProfileResponse struct {
+	ID        string `json:"id"`
+	UserName  string `json:"userName"`
+	Email     string `json:"email"`
+	ImagePath string `json:"imagePath"`
+	Profile   string `json:"profile"`
+}
+
 type UserListResponse struct {
 	ID       string `json:"id"`
 	UserName string `json:"userName"`
@@ -48,7 +57,7 @@ type UserListResponse struct {
 
 type Users []UserListResponse
 
-func (u *User) Validate() error {
+func (u *User) ValidateUser() error {
 	return validation.ValidateStruct(u,
 		validation.Field(
 			&u.Email,
@@ -87,4 +96,14 @@ func (u *Users) NewUserListResponse() []UserListResponse {
 		})
 	}
 	return res
+}
+
+func (u *User) NewUserProfileResponse() UserProfileResponse {
+	return UserProfileResponse{
+		ID:        u.ID,
+		UserName:  u.UserName,
+		Email:     u.Email,
+		ImagePath: u.ImagePath,
+		Profile:   u.Profile,
+	}
 }
