@@ -72,11 +72,11 @@ func (uu *userUsecase) SignUp(user userModel.User, cnf config.Config) (userModel
 		return userModel.UserResponse{}, "", err
 	}
 	tx.Commit()
-	resUser := userModel.UserResponse{
+	res := userModel.UserResponse{
 		ID:    newUser.ID,
 		Email: newUser.Email,
 	}
-	return resUser, tokenString, nil
+	return res, tokenString, nil
 }
 
 func (uu *userUsecase) Login(user userModel.User, cnf config.Config) (string, error) {
@@ -138,9 +138,9 @@ func (uu *userUsecase) GetProfile(userID string) (userModel.UserProfileResponse,
 		return userModel.UserProfileResponse{}, err
 	}
 
-	u := user.NewUserProfileResponse()
+	res := user.NewUserProfileResponse()
 
-	return u, nil
+	return res, nil
 }
 
 func (uu *userUsecase) List(userID string) (userModel.Users, error) {
