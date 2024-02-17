@@ -28,14 +28,14 @@ type chatController struct {
 }
 
 var (
-	upgrader = websocket.Upgrader{	
+	upgrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
-		// ここでオリジンの検証を行う場合があります。
-		// セキュリティ上の理由からオリジンを検証することが推奨されますが、
-		// 開発中や内部ツールの場合は true を返してすべて許可することがあります。
-		return true
+			// ここでオリジンの検証を行う場合があります。
+			// セキュリティ上の理由からオリジンを検証することが推奨されますが、
+			// 開発中や内部ツールの場合は true を返してすべて許可することがあります。
+			return true
 		},
-	}	
+	}
 )
 
 func NewChatController(uu usecase.IChatUsecase, cnf config.Config, oauthConf *oauth2.Config) IChatController {
