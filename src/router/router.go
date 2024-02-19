@@ -33,6 +33,7 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, rc 
 		//CookieMaxAge:   60,
 	}))
 	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 	// =============== user ===============
 	e.POST("/signup", uc.SignUp)
 	e.POST("/login", uc.LogIn)
