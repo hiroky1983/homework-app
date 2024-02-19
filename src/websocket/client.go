@@ -56,7 +56,7 @@ type Client struct {
 // The application runs readPump in a per-connection goroutine. The application
 // ensures that there is at most one reader on a connection by executing all
 // reads from this goroutine.
-func (c *Client) ReadPump() {
+func (c *Client) ReadMessage() {
 	defer func() {
 		c.Hub.unregister <- c //Hubからunregisterして
 		c.Conn.Close()        //connectionをcloseする
@@ -89,7 +89,7 @@ func (c *Client) ReadPump() {
 // A goroutine running writePump is started for each connection. The
 // application ensures that there is at most one writer to a connection by
 // executing all writes from this goroutine.
-func (c *Client) WritePump() {
+func (c *Client) WriteMessage() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()  //tickerを止めて

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"homework/config"
 	"homework/controller"
 	"homework/db"
@@ -11,6 +10,7 @@ import (
 	"homework/router"
 	"homework/usecase"
 	"homework/websocket"
+	"log"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 	go hub.Run()
 	cfg, err := config.NewConfig(ctx)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	db := db.NewDB(*cfg)
 	googleOauthConfig := cfg.NewGoogleOauthConfig()
