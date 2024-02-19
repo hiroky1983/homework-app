@@ -14,7 +14,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func NewRouter(uc controller.IUserController, cc controller.IChatController, rc controller.IRoomController, cnf config.Config) *echo.Echo {
+func NewRouter(uc controller.IUserController, cc controller.IChatController, rc controller.IRoomController, wc controller.IWebSocketController, cnf config.Config) *echo.Echo {
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -55,7 +55,7 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, rc 
 		SigningKey:  []byte(os.Getenv("SECRET")),
 		TokenLookup: "cookie:token",
 	}))
-	chat.GET("/socket", cc.HandleWebSocket)
+	chat.POST("/create", cc.CreateChat)
 	chat.GET("/get/:room_id", cc.ListChat)
 	chat.PUT("/delete", cc.DeleteChat)
 	// =============== room ===============
@@ -65,6 +65,9 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, rc 
 		TokenLookup: "cookie:token",
 	}))
 	room.POST("/create", rc.CreateRoom)
+
+	// ================ websocket ================
+	e.GET("/socket/:room_id", wc.ServeRoomWs)
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
 	return e

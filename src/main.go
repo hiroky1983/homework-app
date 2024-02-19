@@ -34,6 +34,7 @@ func main() {
 	userController := controller.NewUserController(userUsecase, userRepository, *cfg, googleOauthConfig, db)
 	chatController := controller.NewChatController(chatUseCase, *cfg, googleOauthConfig)
 	roomController := controller.NewRoomController(roomUseCase, *cfg, db)
-	e := router.NewRouter(userController, chatController, roomController, *cfg)
+	webSocketController := controller.NewWebSocketController(hub)
+	e := router.NewRouter(userController, chatController, roomController, webSocketController, *cfg)
 	e.Logger.Fatal(e.Start(":8080"))
 }

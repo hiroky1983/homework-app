@@ -33,6 +33,13 @@ type ChatRequest struct {
 	RoomID  string `json:"roomId"`
 }
 
+
+type CreateChatRequest struct {
+	UserID  string `json:"userId"`
+	Message string `json:"message"`
+	RoomID  string `json:"roomId"`
+}
+
 type ChatResponse struct {
 	ID        uint64    `json:"id" bun:"primary_key"`
 	Message   string    `json:"message"`

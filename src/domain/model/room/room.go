@@ -1,6 +1,7 @@
 package room
 
 import (
+	"homework/websocket"
 	"time"
 
 	"github.com/uptrace/bun"
@@ -23,3 +24,5 @@ type RoomMap struct {
 	CreatedAt time.Time `json:"created_at" bun:"default:current_timestamp"`
 	UpdatedAt time.Time `json:"updated_at" bun:"default:current_timestamp"`
 }
+
+var RoomToHub = map[uint]*websocket.Hub{}

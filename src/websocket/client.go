@@ -7,6 +7,7 @@ package websocket
 import (
 	"bytes"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -32,6 +33,9 @@ var (
 )
 
 var Upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
