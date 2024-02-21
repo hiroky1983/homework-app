@@ -7,14 +7,12 @@ package websocket
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"homework/domain/model/chat"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/labstack/echo/v4"
 )
 
 const (
@@ -93,7 +91,8 @@ func (c *Client) ReadMessage() {
 // A goroutine running writePump is started for each connection. The
 // application ensures that there is at most one writer to a connection by
 // executing all writes from this goroutine.
-func (c *Client) WriteMessage(e echo.Context) {
+func (c *Client) WriteMessage(userID string) {
+
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()  //tickerを止めて
@@ -112,12 +111,12 @@ func (c *Client) WriteMessage(e echo.Context) {
 				}
 				return
 			}
-			chat := chat.ChatRequest{}
+			chat := chat.CreateChatRequest{}
 
 			if err := json.Unmarshal(message, &chat); err != nil {
 				log.Printf("error: %v", err)
 			}
-			fmt.Println("=================",chat)
+			chat.UserID = userID
 			w, err := c.Conn.NextWriter(websocket.TextMessage)
 			if err != nil {
 				return

@@ -68,7 +68,12 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, rc 
 	room.POST("/create", rc.CreateRoom)
 
 	// ================ websocket ================
-	e.GET("/socket/:room_id", wc.ServeRoomWs)
+	ws := e.Group("/socket")
+	ws.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	ws.GET("/:room_id", wc.ServeRoomWs)
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
 	return e
