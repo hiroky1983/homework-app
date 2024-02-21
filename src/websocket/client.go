@@ -111,12 +111,16 @@ func (c *Client) WriteMessage(userID string) {
 				}
 				return
 			}
-			chat := chat.CreateChatRequest{}
-
-			if err := json.Unmarshal(message, &chat); err != nil {
+			ch := chat.ChatResponse{}
+			if err := json.Unmarshal(message, &ch); err != nil {
 				log.Printf("error: %v", err)
 			}
-			chat.UserID = userID
+			ch.Sender = chat.SenderMe
+			
+			message, err := json.Marshal(ch)
+			if err != nil {
+				log.Printf("error: %v", err)
+			}
 			w, err := c.Conn.NextWriter(websocket.TextMessage)
 			if err != nil {
 				return
