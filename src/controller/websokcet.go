@@ -38,6 +38,6 @@ func serveWs(hub *websocket.Hub, c echo.Context) {
 	client := &websocket.Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256)}
 	client.Hub.Register <- client                                                   //Hubにregisterする
 
-	go client.WriteMessage()
+	go client.WriteMessage(c)
 	go client.ReadMessage()
 }
