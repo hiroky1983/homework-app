@@ -204,12 +204,21 @@ func (uc *userController) ListUser(c echo.Context) error {
 func (uc *userController) Authorization(c echo.Context) error {
 	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+		return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
 	}
 
 	authRes, err := uc.uu.Authorization(userID)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
+		switch err.Error() {
+			case "user not found":
+				return c.JSON(http.StatusNotFound, apperror.ErrorWrapperWithCode(err, http.StatusNotFound))
+			case "still user not signup verified":
+				return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
+			case "user is deleted":
+				return c.JSON(http.StatusForbidden, apperror.ErrorWrapperWithCode(err, http.StatusForbidden))
+			default:
+				return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+		}
 	}
 	return c.JSON(http.StatusOK, authRes)
 }
