@@ -74,3 +74,13 @@ func (ur *User) ListUser(db repository.DBConn, userID string) (user.Users, error
 	}
 	return users, nil
 }
+
+func (ur *User) IsExistUser(db repository.DBConn, u *user.User, UserID string) (bool, error) {
+	if err := db.NewSelect().Model((u)).Where("id=?", UserID).Scan(context.Background(), u); err != nil {
+		if sql.ErrNoRows == err {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+} 

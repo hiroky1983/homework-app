@@ -50,6 +50,7 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, rc 
 	user.GET("/get_profile", uc.GetUser)
 	user.POST("/create_profile", uc.CreateProfile)
 	user.GET("/users", uc.ListUser)
+	user.GET("/auth", uc.Authorization)
 	// =============== chat ===============
 	chat := e.Group("/chat")
 	chat.Use(echojwt.WithConfig(echojwt.Config{

@@ -18,6 +18,7 @@ type IUserUsecase interface {
 	CreateProfile(user userModel.User) error
 	GetProfile(userID string) (userModel.UserProfileResponse, error)
 	List(userID string) (userModel.Users, error)
+	Authorization(userID string) (userModel.AUthorizationResponse, error)
 }
 
 type userUsecase struct {
@@ -150,6 +151,27 @@ func (uu *userUsecase) List(userID string) (userModel.Users, error) {
 	}
 
 	res := users.NewUserListResponse()
+
+	return res, nil
+}
+
+func (uu *userUsecase) Authorization(userID string) (userModel.AUthorizationResponse, error) {
+	user := userModel.User{}
+	ok, err := uu.ur.IsExistUser(uu.db, &user, userID)
+	if err != nil {
+		return userModel.AUthorizationResponse{}, err
+	}
+	if !ok {
+		return userModel.AUthorizationResponse{}, errors.New("user not found")
+	}
+
+	res := user.NewAuthResponse()
+	if !res.IsVerified {
+		return userModel.AUthorizationResponse{}, errors.New("still user not signup verified")
+	}
+	if res.IsDeleted {
+		return userModel.AUthorizationResponse{}, errors.New("user is deleted")
+	}
 
 	return res, nil
 }

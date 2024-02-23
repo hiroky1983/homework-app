@@ -31,6 +31,7 @@ type IUserController interface {
 	CreateProfile(c echo.Context) error
 	SignUpCallback(c echo.Context) error
 	ListUser(c echo.Context) error
+	Authorization(c echo.Context) error
 }
 
 type userController struct {
@@ -198,4 +199,17 @@ func (uc *userController) ListUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
 	return c.JSON(http.StatusOK, users)
+}
+
+func (uc *userController) Authorization(c echo.Context) error {
+	userID, err := token.GetUserIDWithTokenCheck(c)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
+	}
+
+	authRes, err := uc.uu.Authorization(userID)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
+	}
+	return c.JSON(http.StatusOK, authRes)
 }

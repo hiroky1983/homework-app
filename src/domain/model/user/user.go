@@ -62,7 +62,7 @@ type UserListResponse struct {
 // userテーブルのis_deletedがfalseかどうか
 type AUthorizationResponse struct {
 	IsLogin    bool `json:"isLogin"`
-	IsExpored  bool `json:"isExpored"`
+	IsExpired  bool `json:"isExpired"`
 	IsVerified bool `json:"isVerified"`
 	IsDeleted  bool `json:"isDeleted"`
 }
@@ -117,5 +117,14 @@ func (u *User) NewUserProfileResponse() UserProfileResponse {
 		Email:     u.Email,
 		ImagePath: u.ImagePath,
 		Profile:   u.Profile,
+	}
+}
+
+func (u *User) NewAuthResponse() AUthorizationResponse {		
+	return AUthorizationResponse{
+		IsLogin:    true,
+		IsExpired:  true,
+		IsVerified: u.IsVerified,
+		IsDeleted:  u.IsDeleted,
 	}
 }
