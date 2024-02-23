@@ -83,4 +83,4 @@ func (ur *User) IsExistUser(db repository.DBConn, u *user.User, UserID string) (
 		return false, err
 	}
 	return true, nil
-} 
+}

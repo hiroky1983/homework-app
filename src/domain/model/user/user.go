@@ -120,7 +120,7 @@ func (u *User) NewUserProfileResponse() UserProfileResponse {
 	}
 }
 
-func (u *User) NewAuthResponse() AUthorizationResponse {		
+func (u *User) NewAuthResponse() AUthorizationResponse {
 	return AUthorizationResponse{
 		IsLogin:    true,
 		IsExpired:  true,

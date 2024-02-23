@@ -31,6 +31,9 @@ var _ repository.IUserRepository = &IUserRepositoryMock{}
 //			GetUserByIDFunc: func(db repository.DBConn, userMoqParam *user.User, userID string) error {
 //				panic("mock out the GetUserByID method")
 //			},
+//			IsExistUserFunc: func(db repository.DBConn, u *user.User, UserID string) (bool, error) {
+//				panic("mock out the IsExistUser method")
+//			},
 //			ListUserFunc: func(db repository.DBConn, userID string) (user.Users, error) {
 //				panic("mock out the ListUser method")
 //			},
@@ -58,6 +61,9 @@ type IUserRepositoryMock struct {
 
 	// GetUserByIDFunc mocks the GetUserByID method.
 	GetUserByIDFunc func(db repository.DBConn, userMoqParam *user.User, userID string) error
+
+	// IsExistUserFunc mocks the IsExistUser method.
+	IsExistUserFunc func(db repository.DBConn, u *user.User, UserID string) (bool, error)
 
 	// ListUserFunc mocks the ListUser method.
 	ListUserFunc func(db repository.DBConn, userID string) (user.Users, error)
@@ -104,6 +110,15 @@ type IUserRepositoryMock struct {
 			// UserID is the userID argument value.
 			UserID string
 		}
+		// IsExistUser holds details about calls to the IsExistUser method.
+		IsExistUser []struct {
+			// Db is the db argument value.
+			Db repository.DBConn
+			// U is the u argument value.
+			U *user.User
+			// UserID is the UserID argument value.
+			UserID string
+		}
 		// ListUser holds details about calls to the ListUser method.
 		ListUser []struct {
 			// Db is the db argument value.
@@ -130,6 +145,7 @@ type IUserRepositoryMock struct {
 	lockGetProfile           sync.RWMutex
 	lockGetUserByEmail       sync.RWMutex
 	lockGetUserByID          sync.RWMutex
+	lockIsExistUser          sync.RWMutex
 	lockListUser             sync.RWMutex
 	lockUpdateIsVerifiedUser sync.RWMutex
 	lockUpdateUser           sync.RWMutex
@@ -288,6 +304,46 @@ func (mock *IUserRepositoryMock) GetUserByIDCalls() []struct {
 	mock.lockGetUserByID.RLock()
 	calls = mock.calls.GetUserByID
 	mock.lockGetUserByID.RUnlock()
+	return calls
+}
+
+// IsExistUser calls IsExistUserFunc.
+func (mock *IUserRepositoryMock) IsExistUser(db repository.DBConn, u *user.User, UserID string) (bool, error) {
+	if mock.IsExistUserFunc == nil {
+		panic("IUserRepositoryMock.IsExistUserFunc: method is nil but IUserRepository.IsExistUser was just called")
+	}
+	callInfo := struct {
+		Db     repository.DBConn
+		U      *user.User
+		UserID string
+	}{
+		Db:     db,
+		U:      u,
+		UserID: UserID,
+	}
+	mock.lockIsExistUser.Lock()
+	mock.calls.IsExistUser = append(mock.calls.IsExistUser, callInfo)
+	mock.lockIsExistUser.Unlock()
+	return mock.IsExistUserFunc(db, u, UserID)
+}
+
+// IsExistUserCalls gets all the calls that were made to IsExistUser.
+// Check the length with:
+//
+//	len(mockedIUserRepository.IsExistUserCalls())
+func (mock *IUserRepositoryMock) IsExistUserCalls() []struct {
+	Db     repository.DBConn
+	U      *user.User
+	UserID string
+} {
+	var calls []struct {
+		Db     repository.DBConn
+		U      *user.User
+		UserID string
+	}
+	mock.lockIsExistUser.RLock()
+	calls = mock.calls.IsExistUser
+	mock.lockIsExistUser.RUnlock()
 	return calls
 }
 
