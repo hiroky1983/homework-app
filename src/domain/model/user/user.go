@@ -55,6 +55,18 @@ type UserListResponse struct {
 	RoomID   string `json:"roomId"`
 }
 
+// 認可
+// ログインしているかどうか判定（tokenがあるかどうか） && tokenに格納されているuser_idがDBに存在するかどうか
+// tokenのexpiredが期間内かどうか
+// is_verifiedがtrueかどうか
+// userテーブルのis_deletedがfalseかどうか
+type AUthorizationResponse struct {
+	IsLogin    bool `json:"isLogin"`
+	IsExpored  bool `json:"isExpored"`
+	IsVerified bool `json:"isVerified"`
+	IsDeleted  bool `json:"isDeleted"`
+}
+
 type Users []UserListResponse
 
 func (u *User) ValidateUser() error {
