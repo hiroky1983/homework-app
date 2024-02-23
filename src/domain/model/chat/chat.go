@@ -33,7 +33,6 @@ type ChatRequest struct {
 	RoomID  string `json:"roomId"`
 }
 
-
 type CreateChatRequest struct {
 	UserID  string `json:"userId"`
 	Message string `json:"message"`

@@ -21,7 +21,7 @@ func NewWebSocketController(hub *websocket.Hub) IWebSocketController {
 	return &webSocketController{hub}
 }
 
-func (w *webSocketController)ServeRoomWs(c echo.Context) error {
+func (w *webSocketController) ServeRoomWs(c echo.Context) error {
 	roomID := c.Param("room_id")
 	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
@@ -41,7 +41,7 @@ func serveWs(hub *websocket.Hub, c echo.Context, userID string) {
 		return
 	}
 	client := &websocket.Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256)}
-	client.Hub.Register <- client                                                   //Hubにregisterする
+	client.Hub.Register <- client //Hubにregisterする
 
 	go client.WriteMessage(userID)
 	go client.ReadMessage()

@@ -45,7 +45,7 @@ func (cc *chatController) CreateChat(c echo.Context) error {
 		RoomID:  req.RoomID,
 		UserID:  userID,
 	}
-	
+
 	res, err := cc.cu.Create(chat)
 	if err != nil {
 		return c.JSON(500, err)

@@ -116,7 +116,7 @@ func (c *Client) WriteMessage(userID string) {
 				log.Printf("error: %v", err)
 			}
 			ch.Sender = chat.SenderMe
-			
+
 			message, err := json.Marshal(ch)
 			if err != nil {
 				log.Printf("error: %v", err)
