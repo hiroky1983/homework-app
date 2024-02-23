@@ -51,10 +51,12 @@ func (uc *userController) SignUp(c echo.Context) error {
 	if err := c.Bind(&u); err != nil {
 		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
 	}
+
 	userRes, tokenString, err := uc.uu.SignUp(u, uc.cnf)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
+
 	cookie.SetCookie(tokenString, uc.cnf.APIDomain, c, time.Now().Add(24*time.Hour))
 	return c.JSON(http.StatusCreated, userRes)
 }
@@ -64,10 +66,12 @@ func (uc *userController) LogIn(c echo.Context) error {
 	if err := c.Bind(&u); err != nil {
 		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
 	}
+
 	tokenString, err := uc.uu.Login(u, uc.cnf)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
+
 	cookie.SetCookie(tokenString, uc.cnf.APIDomain, c, time.Now().Add(24*time.Hour))
 	return c.JSON(http.StatusOK, user.LonginResponse{
 		Code:    http.StatusOK,
