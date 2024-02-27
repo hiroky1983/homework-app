@@ -92,7 +92,6 @@ func (c *Client) ReadMessage() {
 // application ensures that there is at most one writer to a connection by
 // executing all writes from this goroutine.
 func (c *Client) WriteMessage(userID string) {
-
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()  //tickerを止めて

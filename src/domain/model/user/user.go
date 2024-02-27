@@ -60,7 +60,7 @@ type UserListResponse struct {
 // tokenのexpiredが期間内かどうか
 // is_verifiedがtrueかどうか
 // userテーブルのis_deletedがfalseかどうか
-type AUthorizationResponse struct {
+type AuthorizationResponse struct {
 	IsLogin    bool `json:"isLogin"`
 	IsExpired  bool `json:"isExpired"`
 	IsVerified bool `json:"isVerified"`
@@ -120,8 +120,8 @@ func (u *User) NewUserProfileResponse() UserProfileResponse {
 	}
 }
 
-func (u *User) NewAuthResponse() AUthorizationResponse {
-	return AUthorizationResponse{
+func (u *User) NewAuthResponse() AuthorizationResponse {
+	return AuthorizationResponse{
 		IsLogin:    true,
 		IsExpired:  true,
 		IsVerified: u.IsVerified,
