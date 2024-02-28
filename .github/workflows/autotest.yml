@@ -20,7 +20,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - name: Install dependencies
-        run: cd ../.. && cd ./src go mod download
+        run: cd ../.. && make tidy
       - name: Run tests
         run: |
           go test -v ./...
