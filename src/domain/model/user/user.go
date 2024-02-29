@@ -41,7 +41,6 @@ type UserProfileRequest struct {
 }
 
 type UserProfileResponse struct {
-	ID        string `json:"id"`
 	UserName  string `json:"userName"`
 	Email     string `json:"email"`
 	ImagePath string `json:"imagePath"`
@@ -114,7 +113,6 @@ func (u *Users) NewUserListResponse() []UserListResponse {
 
 func (u *User) NewUserProfileResponse() UserProfileResponse {
 	return UserProfileResponse{
-		ID:        u.ID,
 		UserName:  u.UserName,
 		Email:     u.Email,
 		ImagePath: u.ImagePath,
