@@ -49,10 +49,11 @@ type UserProfileResponse struct {
 }
 
 type UserListResponse struct {
-	ID       string `json:"id"`
-	UserName string `json:"userName"`
-	Email    string `json:"email"`
-	RoomID   string `json:"roomId"`
+	ID        string `json:"id"`
+	UserName  string `json:"userName"`
+	Email     string `json:"email"`
+	RoomID    string `json:"roomId"`
+	ImagePath string `json:"imagePath"`
 }
 
 // 認可
@@ -101,10 +102,11 @@ func (u *Users) NewUserListResponse() []UserListResponse {
 	var res []UserListResponse
 	for _, user := range *u {
 		res = append(res, UserListResponse{
-			ID:       user.ID,
-			UserName: user.UserName,
-			Email:    user.Email,
-			RoomID:   user.RoomID,
+			ID:        user.ID,
+			UserName:  user.UserName,
+			Email:     user.Email,
+			RoomID:    user.RoomID,
+			ImagePath: user.ImagePath,
 		})
 	}
 	return res
