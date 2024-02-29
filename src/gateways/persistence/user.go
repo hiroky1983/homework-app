@@ -65,7 +65,7 @@ func (ur *User) ListUser(db repository.DBConn, userID string) (user.Users, error
 	u := &user.User{}
 	var users user.Users
 	if err := db.NewSelect().Model(u).
-		Column("u.id", "u.user_name", "u.email").
+		Column("u.id", "u.user_name", "u.email", "u.image_path").
 		ColumnExpr("rm.room_id AS room_id").
 		Join("LEFT JOIN room_map AS rm ON u.id = rm.user_id").
 		Where("u.id != ?", userID).
