@@ -30,11 +30,11 @@ func (w *webSocketController) ServeRoomWs(c echo.Context) error {
 	hub := w.Hub
 	go hub.Run()
 	room.RoomToHub[roomID] = hub
-	serveWs(hub, c, userID)
+	serveWs(hub, c, userID, roomID)
 	return nil
 }
 
-func serveWs(hub *websocket.Hub, c echo.Context, userID string) {
+func serveWs(hub *websocket.Hub, c echo.Context, userID string, roomID string) {
 	conn, err := websocket.Upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
 		log.Println(err)
@@ -43,6 +43,6 @@ func serveWs(hub *websocket.Hub, c echo.Context, userID string) {
 	client := &websocket.Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256)}
 	client.Hub.Register <- client //Hubにregisterする
 
-	go client.WriteMessage(userID)
+	go client.WriteMessage(userID, roomID)
 	go client.ReadMessage()
 }
