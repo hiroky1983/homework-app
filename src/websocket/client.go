@@ -111,7 +111,6 @@ func (c *Client) WriteMessage(userID string, roomID string) {
 				return
 			}
 
-
 			ch := chat.ChatResponse{}
 			if err := json.Unmarshal(message, &ch); err != nil {
 				log.Printf("error: %v", err)
