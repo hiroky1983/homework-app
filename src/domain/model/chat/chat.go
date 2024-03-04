@@ -41,10 +41,10 @@ type CreateChatRequest struct {
 
 type ChatResponse struct {
 	ID        uint64    `json:"id" bun:"primary_key"`
-	UserID    string    `json:"user_id"`
+	UserID    string    `json:"userId"`
 	Message   string    `json:"message"`
 	Sender    string    `json:"sender"`
-	CreatedAt time.Time `json:"created_at"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 type ChatList []Chat
