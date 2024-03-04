@@ -41,6 +41,7 @@ type CreateChatRequest struct {
 
 type ChatResponse struct {
 	ID        uint64    `json:"id" bun:"primary_key"`
+	UserID    string    `json:"user_id"`
 	Message   string    `json:"message"`
 	Sender    string    `json:"sender"`
 	CreatedAt time.Time `json:"created_at"`
@@ -61,6 +62,7 @@ func (c *Chat) Validate() error {
 func (c *Chat) NewChatResponse() ChatResponse {
 	return ChatResponse{
 		ID:        c.ID,
+		UserID:    c.UserID,
 		Message:   c.Message,
 		Sender:    SenderMe,
 		CreatedAt: c.CreatedAt,
