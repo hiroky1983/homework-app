@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  user.LonginResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
   user.UserRequest:
     properties:
       email:
@@ -21,16 +28,32 @@ info:
   title: homework API
   version: "1.0"
 paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: アプリケーションのログイン
+      parameters:
+      - description: サインアップ
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.LonginResponse'
+      summary: ログインAPI
   /signin:
     post:
       consumes:
       - application/json
       description: ユーザー新規登録
       parameters:
-      - description: ID
-        in: path
-        name: id
-        type: integer
       - description: サインアップ
         in: body
         name: body
@@ -43,5 +66,5 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/user.UserResponse'
-      summary: ユーザー新規登録
+      summary: ユーザー新規登録API
 swagger: "2.0"

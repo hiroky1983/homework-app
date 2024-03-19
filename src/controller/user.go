@@ -48,11 +48,10 @@ func NewUserController(uu usecase.IUserUsecase, ur repository.IUserRepository, c
 
 // Signup godoc
 //
-// @Summary      ユーザー新規登録
+// @Summary      ユーザー新規登録API
 // @Description  ユーザー新規登録
 // @Accept       json
 // @Produce      json
-// @Param        id    path      int                        false  "ID"
 // @Param        body  body      user.UserRequest  false  "サインアップ"
 // @Success      200   {object}  user.UserResponse
 // @Router       /signin [post]
@@ -75,6 +74,15 @@ func (uc *userController) SignUp(c echo.Context) error {
 	return c.JSON(http.StatusCreated, userRes)
 }
 
+// Login godoc
+//
+// @Summary      ログインAPI
+// @Description  アプリケーションのログイン
+// @Accept       json
+// @Produce      json
+// @Param        body  body      user.UserRequest  true  "サインアップ"
+// @Success      200   {object}  user.LonginResponse
+// @Router       /login [post]
 func (uc *userController) LogIn(c echo.Context) error {
 	u := user.User{}
 	if err := c.Bind(&u); err != nil {

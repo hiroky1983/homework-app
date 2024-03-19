@@ -12,6 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func NewRouter(uc controller.IUserController, cc controller.IChatController, rc controller.IRoomController, wc controller.IWebSocketController, cnf config.Config) *echo.Echo {
@@ -75,6 +76,9 @@ func NewRouter(uc controller.IUserController, cc controller.IChatController, rc 
 		TokenLookup: "cookie:token",
 	}))
 	ws.GET("/:room_id", wc.ServeRoomWs)
+
+	// ================ swagger ================
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
 	return e

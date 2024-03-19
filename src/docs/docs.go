@@ -19,6 +19,37 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/login": {
+            "post": {
+                "description": "アプリケーションのログイン",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "ログインAPI",
+                "parameters": [
+                    {
+                        "description": "サインアップ",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.LonginResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/signin": {
             "post": {
                 "description": "ユーザー新規登録",
@@ -28,14 +59,8 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "ユーザー新規登録",
+                "summary": "ユーザー新規登録API",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path"
-                    },
                     {
                         "description": "サインアップ",
                         "name": "body",
@@ -57,6 +82,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "user.LonginResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "user.UserRequest": {
             "type": "object",
             "properties": {
