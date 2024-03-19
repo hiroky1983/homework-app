@@ -46,10 +46,24 @@ func NewUserController(uu usecase.IUserUsecase, ur repository.IUserRepository, c
 	return &userController{uu, ur, cnf, oauthConf, db}
 }
 
+// Signup godoc
+//
+// @Summary      ユーザー新規登録
+// @Description  ユーザー新規登録
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int                        false  "ID"
+// @Param        body  body      user.UserRequest  false  "サインアップ"
+// @Success      200   {object}  user.UserResponse
+// @Router       /signin [post]
 func (uc *userController) SignUp(c echo.Context) error {
-	u := user.User{}
-	if err := c.Bind(&u); err != nil {
+	ur := user.UserRequest{}
+	if err := c.Bind(&ur); err != nil {
 		return c.JSON(http.StatusBadRequest, apperror.ErrorWrapperWithCode(err, http.StatusBadRequest))
+	}
+	u := user.User{
+		Email:    ur.Email,
+		Password: ur.Password,
 	}
 
 	userRes, tokenString, err := uc.uu.SignUp(u, uc.cnf)

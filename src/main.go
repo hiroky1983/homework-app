@@ -11,8 +11,14 @@ import (
 	"homework/usecase"
 	"homework/websocket"
 	"log"
+
+	_ "github.com/swaggo/echo-swagger/example/docs"
 )
 
+// @title         homework API
+// @version       1.0
+// @license.name  ymd
+// @BasePath      /
 func main() {
 	ctx := context.Background()
 	flag.Parse()
@@ -34,7 +40,7 @@ func main() {
 	userController := controller.NewUserController(userUsecase, userRepository, *cfg, googleOauthConfig, db)
 	chatController := controller.NewChatController(chatUseCase, *cfg, googleOauthConfig)
 	roomController := controller.NewRoomController(roomUseCase, *cfg, db)
-	webSocketController := controller.NewWebSocketController(hub)
+	webSocketController := controller.NewWebSocketController(hub, roomRepository, db)
 	e := router.NewRouter(userController, chatController, roomController, webSocketController, *cfg)
 	e.Logger.Fatal(e.Start(":8080"))
 }

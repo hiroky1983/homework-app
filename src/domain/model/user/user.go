@@ -26,6 +26,11 @@ type User struct {
 	IsDeleted  bool      `json:"is_deleted" bun:"default:false"`
 }
 
+type UserRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type UserResponse struct {
 	ID    string `json:"id" bun:"primary_key"`
 	Email string `json:"email" bun:"unique"`

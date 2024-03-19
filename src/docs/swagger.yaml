@@ -1,0 +1,47 @@
+basePath: /
+definitions:
+  user.UserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  user.UserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+    type: object
+info:
+  contact: {}
+  license:
+    name: ymd
+  title: homework API
+  version: "1.0"
+paths:
+  /signin:
+    post:
+      consumes:
+      - application/json
+      description: ユーザー新規登録
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        type: integer
+      - description: サインアップ
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/user.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserResponse'
+      summary: ユーザー新規登録
+swagger: "2.0"
