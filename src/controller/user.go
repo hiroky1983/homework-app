@@ -101,6 +101,14 @@ func (uc *userController) LogIn(c echo.Context) error {
 	})
 }
 
+// Logout godoc
+//
+// @Summary      ログアウトAPI
+// @Description  アプリケーションからログアウト
+// @Accept       json
+// @Produce      json
+// @Success      200 
+// @Router       /logout [post]
 func (uc *userController) LogOut(c echo.Context) error {
 	cookie.SetCookie("", uc.cnf.APIDomain, c, time.Now())
 	return c.NoContent(http.StatusOK)

@@ -48,6 +48,17 @@ paths:
           schema:
             $ref: '#/definitions/user.LonginResponse'
       summary: ログインAPI
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: アプリケーションからログアウト
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: ログアウトAPI
   /signin:
     post:
       consumes:
