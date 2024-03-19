@@ -8,6 +8,8 @@ import (
 	"os"
 	"runtime/debug"
 
+	_ "homework/docs"
+
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

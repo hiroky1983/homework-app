@@ -6,13 +6,12 @@ import (
 	"homework/config"
 	"homework/controller"
 	"homework/db"
+	_ "homework/docs"
 	"homework/gateways/persistence"
 	"homework/router"
 	"homework/usecase"
 	"homework/websocket"
 	"log"
-
-	_ "github.com/swaggo/echo-swagger/example/docs"
 )
 
 // @title         homework API

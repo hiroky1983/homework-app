@@ -36,9 +36,15 @@ func (rr *Room) GetRoomByUserID(db repository.DBConn, roomMap *room.RoomMap, use
 	return nil
 }
 
-func (rr *Room) GetUserIDByRoomID(db repository.DBConn, roomMap *room.RoomMap, roomID string) (string, error) {
-	if err := db.NewSelect().Model((roomMap)).Where("room_id=?", roomID).Scan(context.Background()); err != nil {
-		return "", err
+func (rr *Room) GetUserIDByRoomID(db repository.DBConn, roomMap []*room.RoomMap, roomID string) ([]string, error) {
+	if err := db.NewSelect().Model((&roomMap)).Where("room_id=?", roomID).Scan(context.Background()); err != nil {
+		return nil, err
 	}
-	return roomMap.UserID, nil
+
+	userIDs := []string{}
+	for _, rm := range roomMap {
+		userIDs = append(userIDs, rm.UserID)
+	}
+
+	return userIDs, nil
 }
