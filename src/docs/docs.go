@@ -19,6 +19,36 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/chat/create": {
+            "post": {
+                "description": "チャット保存",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "チャット保存API",
+                "parameters": [
+                    {
+                        "description": "チャット保存",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/chat.CreateChatRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/chat.ChatResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/create_profile": {
             "post": {
                 "description": "プロフィール作成",

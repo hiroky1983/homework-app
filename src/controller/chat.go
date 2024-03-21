@@ -29,6 +29,15 @@ func NewChatController(uu usecase.IChatUsecase, cnf config.Config, oauthConf *oa
 	return &chatController{uu, cnf, oauthConf}
 }
 
+// CreateChat godoc
+//
+// @Summary      チャット保存API
+// @Description  チャット保存
+// @Accept       json
+// @Produce      json
+// @Param        body  body    chat.CreateChatRequest  false  "チャット保存"
+// @Success      200  {object}  chat.ChatResponse
+// @Router       /chat/create [post]
 func (cc *chatController) CreateChat(c echo.Context) error {
 	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {

@@ -68,6 +68,25 @@ info:
   title: homework API
   version: "1.0"
 paths:
+  /chat/create:
+    post:
+      consumes:
+      - application/json
+      description: チャット保存
+      parameters:
+      - description: チャット保存
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/chat.CreateChatRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/chat.ChatResponse'
+      summary: チャット保存API
   /create_profile:
     post:
       consumes:
