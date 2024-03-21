@@ -23,11 +23,13 @@ migration:
 api-goget:
 	docker-compose exec app go get ${MOD}
 
+# gen-moq:
+# 	cd src/domain/repository && go generate
 gen-moq:
-	cd src/domain/repository && go generate
+	docker-compose exec ${APP_NAME} go generate ./...
 
-swagger:
-	docker-compose exec homework swag init
+swag:
+	docker-compose exec ${APP_NAME} swag init
 lint:
 	docker-compose exec ${APP_NAME}  go fmt ./...
 	docker-compose exec ${APP_NAME}  sh -c 'staticcheck -go 1.0 $$(go list ./... | grep -v "moq/fakerepository")'
