@@ -46,6 +46,7 @@ func TestNewChatUsecase(t *testing.T) {
 
 func Test_chatUsecase_Create(t *testing.T) {
 	now := time.Now()
+	userID := uuid.New().String()
 	type fields struct {
 		ur repository.IChatRepository
 		db *bun.DB
@@ -72,13 +73,14 @@ func Test_chatUsecase_Create(t *testing.T) {
 			args: args{
 				c: chatModel.Chat{
 					ID:        1,
-					UserID:    uuid.New().String(),
+					UserID:    userID,
 					Message:   "test",
 					CreatedAt: now,
 				},
 			},
 			want: chatModel.ChatResponse{
 				ID:        1,
+				UserID:    userID,
 				Sender:    chatModel.SenderMe,
 				Message:   "test",
 				CreatedAt: now,
