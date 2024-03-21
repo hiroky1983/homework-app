@@ -53,7 +53,7 @@ func NewUserController(uu usecase.IUserUsecase, ur repository.IUserRepository, c
 // @Accept       json
 // @Produce      json
 // @Param        body  body      user.UserRequest  false  "サインアップ"
-// @Success      200   {object}  user.UserResponse
+// @Success      200    {object}  user.UserResponse
 // @Router       /signin [post]
 func (uc *userController) SignUp(c echo.Context) error {
 	ur := user.UserRequest{}
@@ -175,6 +175,15 @@ func (uc *userController) GetUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, u)
 }
 
+// CreateProfile godoc
+//
+// @Summary      プロフィール作成API
+// @Description  プロフィール作成
+// @Accept       json
+// @Produce      json
+// @Param        body  body    user.UserProfileRequest  false  "プロフィール作成"
+// @Success      200 
+// @Router       /create_profile [post]
 func (uc *userController) CreateProfile(c echo.Context) error {
 	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
@@ -222,6 +231,14 @@ func (uc *userController) SignUpCallback(c echo.Context) error {
 	return c.Redirect(http.StatusFound, "http://localhost:3000/profile")
 }
 
+// ListUser godoc
+//
+// @Summary      ユーザー一覧取得API
+// @Description  ユーザー一覧取得
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  user.Users
+// @Router       /users [get]
 func (uc *userController) ListUser(c echo.Context) error {
 	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {

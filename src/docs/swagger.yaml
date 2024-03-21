@@ -1,10 +1,50 @@
 basePath: /
 definitions:
+  chat.ChatResponse:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      sender:
+        type: string
+      userId:
+        type: string
+    type: object
+  chat.CreateChatRequest:
+    properties:
+      message:
+        type: string
+      roomId:
+        type: string
+      userId:
+        type: string
+    type: object
   user.LonginResponse:
     properties:
       code:
         type: integer
       message:
+        type: string
+    type: object
+  user.UserListResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      imagePath:
+        type: string
+      roomId:
+        type: string
+      userName:
+        type: string
+    type: object
+  user.UserProfileRequest:
+    properties:
+      userName:
         type: string
     type: object
   user.UserRequest:
@@ -28,6 +68,23 @@ info:
   title: homework API
   version: "1.0"
 paths:
+  /create_profile:
+    post:
+      consumes:
+      - application/json
+      description: プロフィール作成
+      parameters:
+      - description: プロフィール作成
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/user.UserProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: プロフィール作成API
   /login:
     post:
       consumes:
@@ -78,4 +135,19 @@ paths:
           schema:
             $ref: '#/definitions/user.UserResponse'
       summary: ユーザー新規登録API
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: ユーザー一覧取得
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/user.UserListResponse'
+            type: array
+      summary: ユーザー一覧取得API
 swagger: "2.0"
