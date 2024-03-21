@@ -185,6 +185,36 @@ const docTemplate = `{
                 }
             }
         },
+        "/room/create": {
+            "post": {
+                "description": "ルーム作成",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "ルーム作成API",
+                "parameters": [
+                    {
+                        "description": "ルームID",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/room.RoomRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/room.RoomResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/signin": {
             "post": {
                 "description": "ユーザー新規登録",
@@ -279,6 +309,25 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "room.RoomRequest": {
+            "type": "object",
+            "properties": {
+                "room_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "room.RoomResponse": {
+            "type": "object",
+            "properties": {
+                "roomId": {
+                    "type": "string"
                 }
             }
         },

@@ -25,4 +25,13 @@ type RoomMap struct {
 	UpdatedAt time.Time `json:"updated_at" bun:"default:current_timestamp"`
 }
 
+type RoomRequest struct {
+	RoomID string `json:"room_id"`
+	UserID string `json:"user_id"`
+}
+
+type RoomResponse struct {
+	RoomID string `json:"roomId"`
+}
+
 var RoomToHub = map[string]*websocket.Hub{}

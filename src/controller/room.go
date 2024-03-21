@@ -26,19 +26,31 @@ func NewRoomController(ru usecase.IRoomUsecase, cnf config.Config, db *bun.DB) I
 	return &roomController{ru, cnf, db}
 }
 
+// CreateRoom godoc
+//
+// @Summary      ルーム作成API
+// @Description  ルーム作成
+// @Accept       json
+// @Produce      json
+// @Param        body body room.RoomRequest  false  "ルームID"
+// @Success      200 {object} room.RoomResponse 
+// @Router       /room/create [post]
 func (rc *roomController) CreateRoom(c echo.Context) error {
 	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, apperror.ErrorWrapperWithCode(err, http.StatusUnauthorized))
 	}
-	otherUser := room.RoomMap{}
+	otherUser := room.RoomRequest{}
 	if err := c.Bind(&otherUser); err != nil {
 		return c.JSON(http.StatusInternalServerError, apperror.ErrorWrapperWithCode(err, http.StatusInternalServerError))
 	}
 
-	RoomID, err := rc.ru.Create(userID, otherUser)
+	Room, err := rc.ru.Create(userID, room.RoomMap{
+		UserID: otherUser.UserID,
+		RoomID: otherUser.RoomID,
+	})
 	if err != nil {
 		return c.JSON(500, err)
 	}
-	return c.JSON(200, map[string]string{"roomId": RoomID})
+	return c.JSON(200, Room)
 }

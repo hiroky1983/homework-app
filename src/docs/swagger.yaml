@@ -27,6 +27,18 @@ definitions:
       id:
         type: integer
     type: object
+  room.RoomRequest:
+    properties:
+      room_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  room.RoomResponse:
+    properties:
+      roomId:
+        type: string
+    type: object
   user.LonginResponse:
     properties:
       code:
@@ -179,6 +191,25 @@ paths:
         "200":
           description: ""
       summary: ログアウトAPI
+  /room/create:
+    post:
+      consumes:
+      - application/json
+      description: ルーム作成
+      parameters:
+      - description: ルームID
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/room.RoomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/room.RoomResponse'
+      summary: ルーム作成API
   /signin:
     post:
       consumes:
