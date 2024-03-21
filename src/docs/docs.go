@@ -49,6 +49,67 @@ const docTemplate = `{
                 }
             }
         },
+        "/chat/delete": {
+            "put": {
+                "description": "ルーム内のチャットを削除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "チャット削除API",
+                "parameters": [
+                    {
+                        "description": "ルームID",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/chat.DeleteChatRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/chat/get/{room_id}": {
+            "get": {
+                "description": "ルーム内のチャットを取得",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "チャット取得API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ルームID",
+                        "name": "room_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/chat.ChatResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/create_profile": {
             "post": {
                 "description": "プロフィール作成",
@@ -210,6 +271,14 @@ const docTemplate = `{
                 },
                 "userId": {
                     "type": "string"
+                }
+            }
+        },
+        "chat.DeleteChatRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
                 }
             }
         },

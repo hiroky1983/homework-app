@@ -23,8 +23,6 @@ migration:
 api-goget:
 	docker-compose exec app go get ${MOD}
 
-# gen-moq:
-# 	cd src/domain/repository && go generate
 gen-moq:
 	docker-compose exec ${APP_NAME} go generate ./...
 

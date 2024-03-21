@@ -63,6 +63,15 @@ func (cc *chatController) CreateChat(c echo.Context) error {
 	return c.JSON(200, res)
 }
 
+// ListChat godoc
+//
+// @Summary      チャット取得API
+// @Description  ルーム内のチャットを取得
+// @Accept       json
+// @Produce      json
+// @Param        room_id path string  false  "ルームID"
+// @Success      200  {array}  chat.ChatResponse
+// @Router       /chat/get/{room_id} [get]
 func (cc *chatController) ListChat(c echo.Context) error {
 	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
@@ -79,6 +88,15 @@ func (cc *chatController) ListChat(c echo.Context) error {
 	return c.JSON(200, res)
 }
 
+// DeleteChat godoc
+//
+// @Summary      チャット削除API
+// @Description  ルーム内のチャットを削除
+// @Accept       json
+// @Produce      json
+// @Param        body body chat.DeleteChatRequest  false  "ルームID"
+// @Success      200 {object} string 
+// @Router       /chat/delete [put]
 func (cc *chatController) DeleteChat(c echo.Context) error {
 	req := chat.DeleteChatRequest{}
 	if err := c.Bind(&req); err != nil {

@@ -22,6 +22,11 @@ definitions:
       userId:
         type: string
     type: object
+  chat.DeleteChatRequest:
+    properties:
+      id:
+        type: integer
+    type: object
   user.LonginResponse:
     properties:
       code:
@@ -87,6 +92,45 @@ paths:
           schema:
             $ref: '#/definitions/chat.ChatResponse'
       summary: チャット保存API
+  /chat/delete:
+    put:
+      consumes:
+      - application/json
+      description: ルーム内のチャットを削除
+      parameters:
+      - description: ルームID
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/chat.DeleteChatRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: チャット削除API
+  /chat/get/{room_id}:
+    get:
+      consumes:
+      - application/json
+      description: ルーム内のチャットを取得
+      parameters:
+      - description: ルームID
+        in: path
+        name: room_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/chat.ChatResponse'
+            type: array
+      summary: チャット取得API
   /create_profile:
     post:
       consumes:
