@@ -26,6 +26,8 @@ api-goget:
 gen-moq:
 	cd src/domain/repository && go generate
 
+swagger:
+	docker-compose exec homework swag init
 lint:
 	docker-compose exec ${APP_NAME}  go fmt ./...
 	docker-compose exec ${APP_NAME}  sh -c 'staticcheck -go 1.0 $$(go list ./... | grep -v "moq/fakerepository")'

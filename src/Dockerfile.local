@@ -12,6 +12,7 @@ RUN go mod download
 RUN go install github.com/cosmtrek/air@v1.40.4
 RUN go install honnef.co/go/tools/cmd/staticcheck@latest
 RUN go install 	github.com/labstack/echo/v4
+RUN go install github.com/swaggo/swag/cmd/swag@v1.8.0
 RUN go mod tidy
 COPY . .
 
