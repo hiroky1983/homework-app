@@ -95,7 +95,7 @@ func (cc *chatController) ListChat(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        body body chat.DeleteChatRequest  false  "ルームID"
-// @Success      200 {object} string 
+// @Success      200 {object} string
 // @Router       /chat/delete [put]
 func (cc *chatController) DeleteChat(c echo.Context) error {
 	req := chat.DeleteChatRequest{}

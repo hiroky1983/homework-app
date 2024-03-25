@@ -107,7 +107,7 @@ func (uc *userController) LogIn(c echo.Context) error {
 // @Description  アプリケーションからログアウト
 // @Accept       json
 // @Produce      json
-// @Success      200 
+// @Success      200
 // @Router       /logout [post]
 func (uc *userController) LogOut(c echo.Context) error {
 	cookie.SetCookie("", uc.cnf.APIDomain, c, time.Now())
@@ -182,7 +182,7 @@ func (uc *userController) GetUser(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        body  body    user.UserProfileRequest  false  "プロフィール作成"
-// @Success      200 
+// @Success      200
 // @Router       /create_profile [post]
 func (uc *userController) CreateProfile(c echo.Context) error {
 	userID, err := token.GetUserIDWithTokenCheck(c)

@@ -33,7 +33,7 @@ func NewRoomController(ru usecase.IRoomUsecase, cnf config.Config, db *bun.DB) I
 // @Accept       json
 // @Produce      json
 // @Param        body body room.RoomRequest  false  "ルームID"
-// @Success      200 {object} room.RoomResponse 
+// @Success      200 {object} room.RoomResponse
 // @Router       /room/create [post]
 func (rc *roomController) CreateRoom(c echo.Context) error {
 	userID, err := token.GetUserIDWithTokenCheck(c)
