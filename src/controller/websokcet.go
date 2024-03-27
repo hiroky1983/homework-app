@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"homework/domain/model/room"
 	"homework/domain/repository"
 	"homework/middleware/token"
 	"homework/websocket"
@@ -34,17 +33,13 @@ func (w *webSocketController) ServeRoomWs(c echo.Context) error {
 	}
 	hub := w.Hub
 	go hub.Run()
-	r := []*room.RoomMap{}
-	userIDs, err := w.rr.GetUserIDByRoomID(w.db, r, roomID)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
-	}
-	room.RoomToHub[roomID] = hub
-	serveWs(hub, c, userID, userIDs)
+
+	hub.RoomID <- roomID
+	serveWs(hub, c, userID)
 	return nil
 }
 
-func serveWs(hub *websocket.Hub, c echo.Context, userID string, userIDs []string) {
+func serveWs(hub *websocket.Hub, c echo.Context, userID string) {
 	conn, err := websocket.Upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
 		log.Println(err)
@@ -53,6 +48,6 @@ func serveWs(hub *websocket.Hub, c echo.Context, userID string, userIDs []string
 	client := &websocket.Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256)}
 	client.Hub.Register <- client //Hubにregisterする
 
-	go client.WriteMessage(userID, userIDs)
+	go client.WriteMessage(userID)
 	go client.ReadMessage()
 }

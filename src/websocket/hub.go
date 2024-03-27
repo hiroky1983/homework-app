@@ -14,6 +14,8 @@ type Hub struct {
 	// Registered clients.
 	clients map[*Client]bool //Clientのpointerがkeyでvalueがbool
 
+	RoomID chan string
+
 	// Inbound messages from the clients.
 	broadcast chan []byte
 
@@ -33,6 +35,7 @@ type Hub struct {
 func NewHub() *Hub { //新たにHubを作ってそのpointerを返す
 	return &Hub{
 		broadcast:  make(chan []byte),
+		RoomID:     make(chan string),
 		Register:   make(chan *Client),
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),

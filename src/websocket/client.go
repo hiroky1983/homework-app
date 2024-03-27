@@ -92,7 +92,7 @@ func (c *Client) ReadMessage() {
 // A goroutine running writePump is started for each connection. The
 // application ensures that there is at most one writer to a connection by
 // executing all writes from this goroutine.
-func (c *Client) WriteMessage(userID string, userIDs []string) {
+func (c *Client) WriteMessage(userID string) {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()  //tickerを止めて
@@ -117,17 +117,6 @@ func (c *Client) WriteMessage(userID string, userIDs []string) {
 				log.Printf("error: %v", err)
 			}
 
-			for i, id := range userIDs {
-				if id == ch.UserID {
-					fmt.Printf("~~~~~~~~~~~~~~~~~~%d回目の処理", i)
-					sender := chat.SenderMe
-					ch.Sender = sender
-				} else {
-					fmt.Printf("==================%d回目の処理", i)
-					sender := chat.SenderOther
-					ch.Sender = sender
-				}
-			}
 			fmt.Printf("ch: %+v", ch)
 			message, err := json.Marshal(ch)
 			if err != nil {

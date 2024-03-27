@@ -1,7 +1,6 @@
 package room
 
 import (
-	"homework/websocket"
 	"time"
 
 	"github.com/uptrace/bun"
@@ -33,5 +32,3 @@ type RoomRequest struct {
 type RoomResponse struct {
 	RoomID string `json:"roomId"`
 }
-
-var RoomToHub = map[string]*websocket.Hub{}
