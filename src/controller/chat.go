@@ -46,7 +46,7 @@ func (cc *chatController) CreateChat(c echo.Context) error {
 
 	req := chat.CreateChatRequest{}
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(500, err)
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
 	chat := chat.Chat{
@@ -57,10 +57,10 @@ func (cc *chatController) CreateChat(c echo.Context) error {
 
 	res, err := cc.cu.Create(chat)
 	if err != nil {
-		return c.JSON(500, err)
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(200, res)
+	return c.JSON(http.StatusOK, res)
 }
 
 // ListChat godoc
@@ -82,10 +82,10 @@ func (cc *chatController) ListChat(c echo.Context) error {
 
 	res, err := cc.cu.List(userID, roomID)
 	if err != nil {
-		return c.JSON(500, err)
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(200, res)
+	return c.JSON(http.StatusOK, res)
 }
 
 // DeleteChat godoc
@@ -100,12 +100,12 @@ func (cc *chatController) ListChat(c echo.Context) error {
 func (cc *chatController) DeleteChat(c echo.Context) error {
 	req := chat.DeleteChatRequest{}
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(500, err)
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
 	if err := cc.cu.Delete(req.ID); err != nil {
-		return c.JSON(500, err)
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(200, "success")
+	return c.JSON(http.StatusOK, "success")
 }

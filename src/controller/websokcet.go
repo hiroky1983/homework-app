@@ -6,6 +6,7 @@ import (
 	"homework/middleware/token"
 	"homework/websocket"
 	"log"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/uptrace/bun"
@@ -36,7 +37,7 @@ func (w *webSocketController) ServeRoomWs(c echo.Context) error {
 	r := []*room.RoomMap{}
 	userIDs, err := w.rr.GetUserIDByRoomID(w.db, r, roomID)
 	if err != nil {
-		return c.JSON(500, err)
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 	room.RoomToHub[roomID] = hub
 	serveWs(hub, c, userID, userIDs)

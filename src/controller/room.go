@@ -50,7 +50,7 @@ func (rc *roomController) CreateRoom(c echo.Context) error {
 		RoomID: otherUser.RoomID,
 	})
 	if err != nil {
-		return c.JSON(500, err)
+		return c.JSON(http.StatusInternalServerError, err)
 	}
-	return c.JSON(200, Room)
+	return c.JSON(http.StatusOK, Room)
 }
