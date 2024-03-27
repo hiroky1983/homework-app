@@ -30,7 +30,7 @@ func (w *webSocketController) ServeRoomWs(c echo.Context) error {
 	roomID := c.Param("room_id")
 	userID, err := token.GetUserIDWithTokenCheck(c)
 	if err != nil {
-		return c.JSON(401, err)
+		return c.JSON(http.StatusUnauthorized, err)
 	}
 	hub := w.Hub
 	go hub.Run()
