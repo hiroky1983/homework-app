@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"homework/config"
 	"homework/db"
-	"homework/migrate/migrations"
+	"homework/db/migrate/migrations"
 
 	"log"
 	"os"
