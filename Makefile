@@ -12,13 +12,13 @@ tidy:
 	docker-compose exec ${APP_NAME} go mod tidy
 
 init:
-	docker-compose exec ${APP_NAME} go run ./migrate/main.go db init
+	docker-compose exec ${APP_NAME} go run ./db/migrate/main.go db init
 
 migrate:
-	docker-compose exec ${APP_NAME} go run ./migrate/main.go db migrate
+	docker-compose exec ${APP_NAME} go run ./db/migrate/main.go db migrate
 
 migration:
-	docker-compose exec ${APP_NAME} go run ./migrate/main.go db create_go ${name}
+	docker-compose exec ${APP_NAME} go run ./db/migrate/main.go db create_go ${name}
 
 api-goget:
 	docker-compose exec app go get ${MOD}
