@@ -5,73 +5,151 @@
 package websocket
 
 import (
+	"encoding/json"
+	"homework/domain/model/chat"
 	"log"
+	"net/http"
+
+	"homework/usecase"
+
+	"github.com/gorilla/websocket"
+	"github.com/labstack/echo/v4"
 )
 
-// Hub maintains the set of active clients and broadcasts messages to the
-// clients.
-type Hub struct {
-	// Registered clients.
-	clients map[*Client]bool //Clientのpointerがkeyでvalueがbool
-
-	RoomID chan string
-
-	// Inbound messages from the clients.
-	broadcast chan []byte
-
-	// Register requests from the clients.
-	Register chan *Client
-
-	// Unregister requests from clients.
-	unregister chan *Client
-
-	//外部から停止通知を送るためのchannel
-	stop chan struct{}
-
-	//goroutineの終了時に外部へ完了通知を送るためのchannel
-	done chan struct{}
+type Client struct {
+	Hub    *Hub
+	Conn   *websocket.Conn
+	Send   chan []byte
+	UserID string
+	RoomID string
 }
 
-func NewHub() *Hub { //新たにHubを作ってそのpointerを返す
+type Hub struct {
+	clients    map[*Client]bool
+	broadcast  chan []byte
+	Register   chan *Client
+	unregister chan *Client
+	done       chan struct{}
+	upgrader   websocket.Upgrader
+	chatUseCase usecase.IChatUsecase
+}
+
+func NewHub(chatUseCase usecase.IChatUsecase) *Hub {
 	return &Hub{
-		broadcast:  make(chan []byte),
-		RoomID:     make(chan string),
-		Register:   make(chan *Client),
-		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
-		stop:       make(chan struct{}),
-		done:       make(chan struct{}),
+		broadcast:   make(chan []byte),
+		Register:    make(chan *Client),
+		unregister:  make(chan *Client),
+		clients:     make(map[*Client]bool),
+		chatUseCase: chatUseCase,
+		upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
 	}
 }
 
 func (h *Hub) Run() {
 	defer func() { close(h.done) }()
+	for msg := range h.broadcast {
+		for client := range h.clients {
+			select {
+			case client.Send <- msg:
+			default:
+				close(client.Send)
+				delete(h.clients, client)
+			}
+		}
+	}
+}
+
+func (h *Hub) readMessage(c *Client) {
+	defer func() {
+		h.unregister <- c
+		c.Conn.Close()
+	}()
+
 	for {
-		select {
-		case client := <-h.Register: //Hubのregisterというchannelに*Clientが入っているとき
-			h.clients[client] = true //clientを登録する
-		case client := <-h.unregister: //Hubのunregisterというchannelに*Clientが入っているとき
-			if _, ok := h.clients[client]; ok { //そのclientが登録されていれば
-				delete(h.clients, client) //削除する
-				close(client.Send)        //そのclientのchannelをcloseする
+		_, message, err := c.Conn.ReadMessage()
+		if err != nil {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Printf("error: %v", err)
 			}
-		case message := <-h.broadcast: //Hubのbroadcastというchannelにmessage(byte)が入っているとき
-			for client := range h.clients { //登録されているclient全員に対して
-				select {
-				case client.Send <- message: //messageを送ることができれば送る
-				default: //送ることができなければ
-					close(client.Send)        //channelをcloseして
-					delete(h.clients, client) //Hubからdeleteする
-				}
-			}
-		case <-h.stop: //stopがcloseした場合，forループを抜ける
-			log.Print("stop recieved")
+			break
+		}
+
+		// メッセージをChatRequestに変換
+		var chatReq chat.ChatRequest
+		if err := json.Unmarshal(message, &chatReq); err != nil {
+			log.Printf("error: %v", err)
+			continue
+		}
+
+		// CreateChatRequestを作成
+		createReq := chat.Chat{
+			UserID:  c.UserID,
+			Message: chatReq.Message,
+			RoomID:  c.RoomID,
+		}
+
+		// DBに保存
+		res, err := h.chatUseCase.Create(createReq)
+		if err != nil {
+			log.Printf("error: %v", err)
+			continue
+		}
+
+		// レスポンスをブロードキャスト
+		resBytes, err := json.Marshal(res)
+		if err != nil {
+			log.Printf("error: %v", err)
+			continue
+		}
+
+		h.broadcast <- resBytes
+	}
+}
+
+func (h *Hub) writeMessage(c *Client) {
+	defer c.Conn.Close()
+	
+	for msg := range c.Send {
+		ch := chat.ChatResponse{}
+		if err := json.Unmarshal(msg, &ch); err != nil {
+			log.Printf("error: %v", err)
+			continue
+		}
+
+		message, err := json.Marshal(ch)
+		if err != nil {
+			log.Printf("error: %v", err)
+			continue
+		}
+
+		if err := c.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
+			log.Printf("error: %v", err)
 			return
 		}
 	}
 }
 
-func (h *Hub) Stop() {
-	close(h.stop)
-	<-h.done
+func (h *Hub) ServeWS(c echo.Context, userID, roomID string) error {
+	conn, err := h.upgrader.Upgrade(c.Response(), c.Request(), nil)
+	if err != nil {
+		return err
+	}
+
+	client := &Client{
+		Hub:    h,
+		Conn:   conn,
+		Send:   make(chan []byte, 256),
+		UserID: userID,
+		RoomID: roomID,
+	}
+	h.Register <- client
+
+	go h.readMessage(client)
+	go h.writeMessage(client)
+
+	return nil
 }

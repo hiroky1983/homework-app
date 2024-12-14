@@ -21,8 +21,6 @@ import (
 func main() {
 	ctx := context.Background()
 	flag.Parse()
-	hub := websocket.NewHub()
-	go hub.Run()
 	cfg, err := config.NewConfig(ctx)
 	if err != nil {
 		log.Println(err)
@@ -39,7 +37,9 @@ func main() {
 	userController := controller.NewUserController(userUsecase, userRepository, *cfg, googleOauthConfig, db)
 	chatController := controller.NewChatController(chatUseCase, *cfg, googleOauthConfig)
 	roomController := controller.NewRoomController(roomUseCase, *cfg, db)
-	webSocketController := controller.NewWebSocketController(hub, roomRepository, db)
+	hub := websocket.NewHub(chatUseCase)
+	go hub.Run()
+	webSocketController := controller.NewWebSocketController(hub, chatUseCase)
 	e := router.NewRouter(userController, chatController, roomController, webSocketController, *cfg)
 	e.Logger.Fatal(e.Start(":8080"))
 }
